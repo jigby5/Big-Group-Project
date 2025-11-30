@@ -1,0 +1,25 @@
+Hello team members!
+
+Create a database called "project3" in your local pg admin server, then run the following script in the query tool to create all tables that we've made so far:
+
+-- start SQL script
+
+CREATE TABLE IF NOT EXISTS public.users
+(
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    username character varying(40) COLLATE pg_catalog."default" NOT NULL,
+    password character varying(60) COLLATE pg_catalog."default" NOT NULL,
+    email character varying(40) COLLATE pg_catalog."default" NOT NULL,
+    level character varying(1) COLLATE pg_catalog."default" NOT NULL,
+    phone character varying(10) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT users_pkey PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.users
+    OWNER to postgres;
+
+-- end SQL script
+
+If you make any edits to the tables, or add new tables, add those scripts to this file, so we can all stay up to date!
