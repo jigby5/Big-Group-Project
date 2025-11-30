@@ -1,6 +1,10 @@
 Hello team members!
 
-Create a database called "project3" in your local pg admin server, then run the following script in the query tool to create all tables that we've made so far:
+To have full access to the project:
+
+Run "npm install" on your terminal. This will download everything in the current dependencies onto the local environment.
+
+Create a database called "project3" in your local pg admin server if you haven't already, then run the following script in the query tool to create all tables that we've made so far:
 
 -- start SQL script
 
