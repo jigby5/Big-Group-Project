@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Admin - Manage Public Resources">
+    <title>Admin Panel - Mental Health Resources</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .emergency-banner {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .emergency-btn {
+            background-color: #fff;
+            color: #dc3545;
+            border: 2px solid #fff;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 8px 20px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            border-radius: 6px;
+        }
+
+        .emergency-btn:hover {
+            background-color: #dc3545;
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        .navbar {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #212529;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .resource-table {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn-edit {
+            background-color: #ffc107;
+            color: #212529;
+            border: none;
+        }
+
+        .btn-edit:hover {
+            background-color: #e0a800;
+            color: #212529;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+        }
+
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
+            color: white;
+        }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Emergency Banner -->
+    <div class="emergency-banner text-center">
+        <div class="container">
+            <a href="tel:988" class="emergency-btn">
+                <i class="bi-telephone-fill me-2"></i>Crisis? Call or Text 988 Now
+            </a>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="/admin">
+                <i class="bi-shield-lock-fill text-purple me-2"></i>Admin Panel
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <span class="nav-link">
+                            <i class="bi-person-circle me-1"></i>Welcome, <%= username %>
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="bi-grid-3x3-gap me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/manager">
+                            <i class="bi-people-fill me-1"></i>Manage Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            <i class="bi-box-arrow-right me-1"></i>Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Admin Header -->
+    <div class="admin-header">
+        <div class="container text-center">
+            <h1><i class="bi-gear-fill me-2"></i>Admin Resource Management</h1>
+            <p class="lead mb-0">Manage public resources shown on the main page</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mb-5">
+        <!-- Success/Error Messages -->
+        <% if (success_message) { %>
+            <div class="alert alert-success alert-dismissible fade show">
+                <i class="bi-check-circle-fill me-2"></i><%= success_message %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } %>
+        <% if (error_message) { %>
+            <div class="alert alert-danger alert-dismissible fade show">
+                <i class="bi-exclamation-triangle-fill me-2"></i><%= error_message %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } %>
+
+        <div class="resource-table">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3><i class="bi-list-check me-2"></i>All Public Resources</h3>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addResourceModal">
+                    <i class="bi-plus-circle me-1"></i>Add New Resource
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>URL</th>
+                            <th>Phone</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% vettedResources.forEach(resource => { %>
+                            <tr>
+                                <td><%= resource.resourceid %></td>
+                                <td><%= resource.resourcename %></td>
+                                <td><span class="badge bg-info"><%= resource.categoryname %></span></td>
+                                <td><%= resource.resourceurl ? resource.resourceurl.substring(0, 30) + '...' : 'N/A' %></td>
+                                <td><%= resource.resourcephone || 'N/A' %></td>
+                                <td>
+                                    <button class="btn btn-sm btn-edit me-1"
+                                            onclick="openEditModal(<%= resource.resourceid %>, '<%= resource.resourcename.replace(/'/g, "\\'") %>', '<%= resource.resourceurl || "" %>', '<%= resource.resourcephone || "" %>', '<%= (resource.resourcedesc || '').replace(/'/g, "\\'") %>', <%= resource.categoryid %>)">
+                                        <i class="bi-pencil-fill"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-delete"
+                                            onclick="deleteResource(<%= resource.resourceid %>)">
+                                        <i class="bi-trash-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Resource Modal -->
+    <div class="modal fade" id="addResourceModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi-plus-circle me-2"></i>Add New Public Resource
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addResourceForm">
+                        <div class="mb-3">
+                            <label for="addResourceName" class="form-label">Resource Name *</label>
+                            <input type="text" class="form-control" id="addResourceName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addCategoryId" class="form-label">Category *</label>
+                            <select class="form-select" id="addCategoryId" required>
+                                <option value="1">Crisis Hotlines</option>
+                                <option value="2">Therapy & Counseling</option>
+                                <option value="3">Support Groups</option>
+                                <option value="4">Education</option>
+                                <option value="5">Wellness Tools</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addResourceUrl" class="form-label">Website URL</label>
+                            <input type="url" class="form-control" id="addResourceUrl" placeholder="https://example.com">
+                        </div>
+                        <div class="mb-3">
+                            <label for="addResourcePhone" class="form-label">Phone Number</label>
+                            <input type="text" class="form-control" id="addResourcePhone" placeholder="1-800-123-4567">
+                        </div>
+                        <div class="mb-3">
+                            <label for="addResourceDesc" class="form-label">Description *</label>
+                            <textarea class="form-control" id="addResourceDesc" rows="4" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="addResource()">
+                        <i class="bi-plus-circle me-1"></i>Add Resource
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Resource Modal -->
+    <div class="modal fade" id="editResourceModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi-pencil-square me-2"></i>Edit Public Resource
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editResourceForm">
+                        <input type="hidden" id="editResourceId">
+                        <div class="mb-3">
+                            <label for="editResourceName" class="form-label">Resource Name *</label>
+                            <input type="text" class="form-control" id="editResourceName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editCategoryId" class="form-label">Category *</label>
+                            <select class="form-select" id="editCategoryId" required>
+                                <option value="1">Crisis Hotlines</option>
+                                <option value="2">Therapy & Counseling</option>
+                                <option value="3">Support Groups</option>
+                                <option value="4">Education</option>
+                                <option value="5">Wellness Tools</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editResourceUrl" class="form-label">Website URL</label>
+                            <input type="url" class="form-control" id="editResourceUrl">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editResourcePhone" class="form-label">Phone Number</label>
+                            <input type="text" class="form-control" id="editResourcePhone">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editResourceDesc" class="form-label">Description *</label>
+                            <textarea class="form-control" id="editResourceDesc" rows="4" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveEditResource()">
+                        <i class="bi-save me-1"></i>Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        async function addResource() {
+            const resourceName = document.getElementById('addResourceName').value.trim();
+            const categoryId = document.getElementById('addCategoryId').value;
+            const resourceUrl = document.getElementById('addResourceUrl').value.trim();
+            const resourcePhone = document.getElementById('addResourcePhone').value.trim();
+            const resourceDesc = document.getElementById('addResourceDesc').value.trim();
+
+            if (!resourceName || !categoryId || !resourceDesc) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin/add-resource', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        resourceName,
+                        categoryId,
+                        resourceUrl,
+                        resourcePhone,
+                        resourceDesc
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Resource added successfully!');
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Failed to add resource.');
+                }
+            } catch (error) {
+                console.error('Error adding resource:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+
+        function openEditModal(resourceId, resourceName, resourceUrl, resourcePhone, resourceDesc, categoryId) {
+            document.getElementById('editResourceId').value = resourceId;
+            document.getElementById('editResourceName').value = resourceName;
+            document.getElementById('editResourceUrl').value = resourceUrl;
+            document.getElementById('editResourcePhone').value = resourcePhone;
+            document.getElementById('editResourceDesc').value = resourceDesc;
+            document.getElementById('editCategoryId').value = categoryId;
+
+            const editModal = new bootstrap.Modal(document.getElementById('editResourceModal'));
+            editModal.show();
+        }
+
+        async function saveEditResource() {
+            const resourceId = document.getElementById('editResourceId').value;
+            const resourceName = document.getElementById('editResourceName').value.trim();
+            const categoryId = document.getElementById('editCategoryId').value;
+            const resourceUrl = document.getElementById('editResourceUrl').value.trim();
+            const resourcePhone = document.getElementById('editResourcePhone').value.trim();
+            const resourceDesc = document.getElementById('editResourceDesc').value.trim();
+
+            if (!resourceName || !categoryId || !resourceDesc) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin/edit-resource', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        resourceId,
+                        resourceName,
+                        categoryId,
+                        resourceUrl,
+                        resourcePhone,
+                        resourceDesc
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Resource updated successfully!');
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Failed to update resource.');
+                }
+            } catch (error) {
+                console.error('Error updating resource:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+
+        async function deleteResource(resourceId) {
+            if (!confirm('Are you sure you want to delete this resource? This will remove it from the public resource hub.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin/delete-resource', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ resourceId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Resource deleted successfully!');
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Failed to delete resource.');
+                }
+            } catch (error) {
+                console.error('Error deleting resource:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Manager - Manage User Roles">
+    <title>Manager Panel - Mental Health Resources</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .emergency-banner {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .emergency-btn {
+            background-color: #fff;
+            color: #dc3545;
+            border: 2px solid #fff;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 8px 20px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            border-radius: 6px;
+        }
+
+        .emergency-btn:hover {
+            background-color: #dc3545;
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        .navbar {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #212529;
+        }
+
+        .manager-header {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .user-table {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn-edit {
+            background-color: #ffc107;
+            color: #212529;
+            border: none;
+        }
+
+        .btn-edit:hover {
+            background-color: #e0a800;
+            color: #212529;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+        }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        .badge-user {
+            background-color: #6c757d;
+        }
+
+        .badge-manager {
+            background-color: #4a90e2;
+        }
+
+        .badge-admin {
+            background-color: #6f42c1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Emergency Banner -->
+    <div class="emergency-banner text-center">
+        <div class="container">
+            <a href="tel:988" class="emergency-btn">
+                <i class="bi-telephone-fill me-2"></i>Crisis? Call or Text 988 Now
+            </a>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="/manager">
+                <i class="bi-people-fill text-primary me-2"></i>Manager Panel
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <span class="nav-link">
+                            <i class="bi-person-circle me-1"></i>Welcome, <%= username %>
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="bi-grid-3x3-gap me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin">
+                            <i class="bi-shield-lock-fill me-1"></i>Manage Resources
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            <i class="bi-box-arrow-right me-1"></i>Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Manager Header -->
+    <div class="manager-header">
+        <div class="container text-center">
+            <h1><i class="bi-person-badge-fill me-2"></i>User Role Management</h1>
+            <p class="lead mb-0">Manage user roles and permissions</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mb-5">
+        <!-- Success/Error Messages -->
+        <% if (success_message) { %>
+            <div class="alert alert-success alert-dismissible fade show">
+                <i class="bi-check-circle-fill me-2"></i><%= success_message %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } %>
+        <% if (error_message) { %>
+            <div class="alert alert-danger alert-dismissible fade show">
+                <i class="bi-exclamation-triangle-fill me-2"></i><%= error_message %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } %>
+
+        <div class="user-table">
+            <h3 class="mb-4"><i class="bi-people me-2"></i>All Users</h3>
+
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Current Role</th>
+                            <th>Level</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% users.forEach(user => { %>
+                            <tr>
+                                <td><%= user.userid %></td>
+                                <td><strong><%= user.username %></strong></td>
+                                <td><%= user.email %></td>
+                                <td><%= user.phone || 'N/A' %></td>
+                                <td>
+                                    <%
+                                    let badgeClass = 'badge-user';
+                                    if (user.level === 'M') {
+                                        badgeClass = user.rolename === 'Admin' ? 'badge-admin' : 'badge-manager';
+                                    }
+                                    %>
+                                    <span class="badge <%= badgeClass %>"><%= user.rolename %></span>
+                                </td>
+                                <td><%= user.level === 'U' ? 'User' : 'Manager/Admin' %></td>
+                                <td>
+                                    <button class="btn btn-sm btn-edit"
+                                            onclick="openEditRoleModal(<%= user.userid %>, '<%= user.username %>', '<%= user.level %>', <%= user.roleid || 1 %>)">
+                                        <i class="bi-pencil-fill"></i> Edit Role
+                                    </button>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="alert alert-info mt-4">
+            <h5><i class="bi-info-circle-fill me-2"></i>Role Information</h5>
+            <ul class="mb-0">
+                <li><strong>User (U):</strong> Standard user with access to dashboard and personal resources</li>
+                <li><strong>Manager (M):</strong> Can manage user roles and edit public resources</li>
+                <li><strong>Admin (M):</strong> Full access to all management features</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Edit Role Modal -->
+    <div class="modal fade" id="editRoleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi-person-badge me-2"></i>Edit User Role
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editRoleForm">
+                        <input type="hidden" id="editUserId">
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Username:</strong></label>
+                            <p id="editUsername" class="form-control-plaintext"></p>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editLevel" class="form-label">Access Level *</label>
+                            <select class="form-select" id="editLevel" required onchange="updateRoleOptions()">
+                                <option value="U">User (U)</option>
+                                <option value="M">Manager/Admin (M)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3" id="roleSelectDiv">
+                            <label for="editRoleId" class="form-label">Specific Role *</label>
+                            <select class="form-select" id="editRoleId" required>
+                                <% roles.forEach(role => { %>
+                                    <option value="<%= role.roleid %>"><%= role.rolename %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveRole()">
+                        <i class="bi-save me-1"></i>Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function openEditRoleModal(userId, username, level, roleId) {
+            document.getElementById('editUserId').value = userId;
+            document.getElementById('editUsername').textContent = username;
+            document.getElementById('editLevel').value = level;
+            document.getElementById('editRoleId').value = roleId;
+
+            updateRoleOptions();
+
+            const editModal = new bootstrap.Modal(document.getElementById('editRoleModal'));
+            editModal.show();
+        }
+
+        function updateRoleOptions() {
+            const level = document.getElementById('editLevel').value;
+            const roleSelectDiv = document.getElementById('roleSelectDiv');
+            const roleSelect = document.getElementById('editRoleId');
+
+            if (level === 'U') {
+                roleSelectDiv.style.display = 'none';
+                roleSelect.value = '1'; // User role
+            } else {
+                roleSelectDiv.style.display = 'block';
+                // Default to Manager if currently User
+                if (roleSelect.value === '1') {
+                    roleSelect.value = '2';
+                }
+            }
+        }
+
+        async function saveRole() {
+            const userId = document.getElementById('editUserId').value;
+            const level = document.getElementById('editLevel').value;
+            const roleId = document.getElementById('editRoleId').value;
+
+            try {
+                const response = await fetch('/api/manager/update-role', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId,
+                        level,
+                        roleId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('User role updated successfully!');
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Failed to update user role.');
+                }
+            } catch (error) {
+                console.error('Error updating role:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+
+        // Initialize role options on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateRoleOptions();
+        });
+    </script>
+</body>
+</html>
