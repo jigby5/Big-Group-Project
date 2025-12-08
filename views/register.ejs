@@ -276,22 +276,6 @@
         <label for="phone" class="form-label">Phone (10 digits)</label>
         <!-- Added pattern for 10-digit US phone number validation -->
         <input type="tel" id="phone" name="phone" class="form-control" placeholder="e.g., 5551234567" pattern="[0-9]{10}" maxlength="10" required>
-        
-        <label class="form-label mt-3">User Level</label>
-        <div class="radio-group">
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="level" id="levelUser" value="U" checked required>
-                <label class="form-check-label" for="levelUser">
-                    Standard User
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="level" id="levelManager" value="M" required>
-                <label class="form-check-label" for="levelManager">
-                    Manager (M)
-                </label>
-            </div>
-        </div>
 
         <button type="submit" class="btn-login">
           <i class="bi-person-plus-fill me-2"></i>Register New User
