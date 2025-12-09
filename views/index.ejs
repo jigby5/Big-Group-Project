@@ -18,42 +18,34 @@
             /* Emergency banner styling */
             .emergency-banner {
                 background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-                padding: 15px 0;
+                padding: 8px 0;
                 position: sticky;
                 top: 0;
                 z-index: 1030;
                 box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-                transition: all 0.4s ease;
             }
-            .emergency-banner.minimized {
-                padding: 8px 0;
-            }
-            .emergency-banner .banner-text {
-                transition: all 0.4s ease;
-            }
-            .emergency-banner.minimized .banner-text {
-                font-size: 0.9rem;
+            .emergency-banner-content {
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
             .emergency-btn {
                 background-color: #fff;
                 color: #dc3545;
-                border: 3px solid #fff;
-                font-weight: 700;
-                font-size: 1.2rem;
-                padding: 12px 30px;
-                transition: all 0.4s ease;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            }
-            .emergency-banner.minimized .emergency-btn {
-                font-size: 0.9rem;
-                padding: 6px 15px;
                 border: 2px solid #fff;
+                font-weight: 700;
+                font-size: 0.9rem;
+                padding: 6px 16px;
+                transition: all 0.3s ease;
+                text-decoration: none;
+                display: inline-block;
+                border-radius: 6px;
+                white-space: nowrap;
             }
             .emergency-btn:hover {
                 background-color: #dc3545;
                 color: #fff;
                 transform: scale(1.05);
-                box-shadow: 0 6px 20px rgba(0,0,0,0.4);
             }
             
             /* Hero Section */
@@ -87,132 +79,146 @@
             /* Resource Categories */
             .resource-section {
                 padding: 3rem 0;
+                background-color: #f5f0e8;
             }
             .resource-section .container {
                 max-width: 1400px;
             }
+
+            /* Category Headers - Matching Dashboard */
             .category-header {
                 display: flex;
                 align-items: center;
-                margin-bottom: 2rem;
+                margin-bottom: 1.5rem;
                 padding-bottom: 0.75rem;
-                border-bottom: 3px solid #e9ecef;
+                border-bottom: 3px solid #5a8eb8;
             }
+
             .category-icon {
-                font-size: 2.5rem;
-                margin-right: 1rem;
-                width: 60px;
-                height: 60px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                background: white;
-                border-radius: 12px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            }
-            .category-icon i {
                 font-size: 2rem;
+                margin-right: 1rem;
             }
+
             .category-title {
+                margin: 0;
                 font-size: 1.75rem;
                 font-weight: 700;
-                margin: 0;
                 color: #212529;
             }
-            
-            /* Resource Cards */
+
+            /* Resource Cards - Matching Dashboard */
             .resource-card {
-                background: white;
-                border: 2px solid #e9ecef;
+                background-color: #fff;
                 border-radius: 12px;
                 padding: 1.5rem;
-                margin-bottom: 1.25rem;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
                 transition: all 0.3s;
+                position: relative;
                 height: 100%;
+                display: flex;
+                flex-direction: column;
             }
+
             .resource-card:hover {
-                border-color: #4a90e2;
-                box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
+                box-shadow: 0 4px 16px rgba(0,0,0,0.15);
                 transform: translateY(-2px);
             }
+
             .resource-card h5 {
                 font-size: 1.25rem;
                 font-weight: 700;
                 margin-bottom: 0.75rem;
                 color: #212529;
             }
+
             .resource-card p {
                 color: #6c757d;
                 margin-bottom: 1rem;
                 font-size: 0.95rem;
+                flex-grow: 1;
             }
+
             .resource-type-badge {
                 display: inline-block;
-                padding: 0.35rem 0.75rem;
+                padding: 0.25rem 0.75rem;
                 border-radius: 20px;
-                font-size: 0.8rem;
+                font-size: 0.85rem;
                 font-weight: 600;
                 margin-bottom: 0.75rem;
             }
+
             .badge-crisis {
-                background-color: #dc3545;
-                color: white;
+                background-color: #f5d7d7;
+                color: #a84444;
             }
+
             .badge-therapy {
-                background-color: #4a90e2;
-                color: white;
+                background-color: #d4e4f1;
+                color: #3a6a8a;
             }
+
             .badge-support {
-                background-color: #28a745;
-                color: white;
+                background-color: #d9e8df;
+                color: #4a7a5a;
             }
+
             .badge-education {
-                background-color: #6f42c1;
-                color: white;
+                background-color: #e4daf0;
+                color: #6b5a8a;
             }
+
             .badge-wellness {
-                background-color: #17a2b8;
-                color: white;
+                background-color: #d6ebe8;
+                color: #3a7a7a;
             }
             
             /* Action Buttons */
-            .btn-call {
-                background-color: #dc3545;
-                border-color: #dc3545;
-                color: white;
+            .btn-call, .btn-text, .btn-visit, .btn-outline-secondary {
+                font-size: 0.85rem;
+                padding: 0.4rem 0.75rem;
                 font-weight: 600;
+                border-radius: 6px;
+                transition: all 0.3s;
+                height: 2.125rem;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .btn-call {
+                background-color: #c85a5a;
+                border-color: #c85a5a;
+                color: white;
             }
             .btn-call:hover {
-                background-color: #c82333;
-                border-color: #bd2130;
+                background-color: #b34a4a;
+                border-color: #a84444;
                 color: white;
             }
             .btn-text {
-                background-color: #4a90e2;
-                border-color: #4a90e2;
+                background-color: #5a8eb8;
+                border-color: #5a8eb8;
                 color: white;
-                font-weight: 600;
             }
             .btn-text:hover {
-                background-color: #357abd;
-                border-color: #357abd;
+                background-color: #4a7ea8;
+                border-color: #3a6e98;
                 color: white;
             }
             .btn-visit {
-                background-color: #28a745;
-                border-color: #28a745;
+                background-color: #5a9e6f;
+                border-color: #5a9e6f;
                 color: white;
-                font-weight: 600;
             }
             .btn-visit:hover {
-                background-color: #218838;
-                border-color: #1e7e34;
+                background-color: #4a8e5f;
+                border-color: #4a8a5f;
                 color: white;
             }
             
             /* CTA Section */
             .cta-section {
-                background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+                background: linear-gradient(135deg, #5a8eb8 0%, #4a7ea8 100%);
                 color: white;
                 padding: 3rem 0;
                 margin-top: 3rem;
@@ -238,27 +244,53 @@
                 padding: 1rem 0;
             }
             .navbar-brand {
-                font-size: 1.5rem;
+                font-size: 1.25rem;
                 font-weight: 700;
                 color: #212529;
             }
+            .navbar-nav .nav-link {
+                font-size: 1rem;
+                padding: 0.5rem 0.75rem;
+                font-weight: 500;
+            }
+            .navbar-nav .dropdown-item {
+                font-size: 0.95rem;
+            }
+            @media (max-width: 991px) {
+                .navbar-collapse {
+                    margin-top: 1rem;
+                }
+            }
             .btn-primary {
-                background-color: #4a90e2;
-                border-color: #4a90e2;
+                background-color: #5a8eb8;
+                border-color: #5a8eb8;
                 color: white;
             }
             .btn-primary:hover {
-                background-color: #357abd;
-                border-color: #357abd;
+                background-color: #4a7ea8;
+                border-color: #4a7ea8;
             }
             .btn-outline-primary {
-                color: #4a90e2;
-                border-color: #4a90e2;
+                color: #5a8eb8;
+                border-color: #5a8eb8;
             }
             .btn-outline-primary:hover {
-                background-color: #4a90e2;
-                border-color: #4a90e2;
+                background-color: #5a8eb8;
+                border-color: #5a8eb8;
                 color: white;
+            }
+            
+            /* Navbar buttons - match action button style */
+            .navbar .btn {
+                font-size: 0.85rem;
+                padding: 0.4rem 0.75rem;
+                font-weight: 600;
+                border-radius: 6px;
+                transition: all 0.3s;
+                height: 2.125rem;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
             }
             
             /* Contact info styling */
@@ -271,6 +303,15 @@
             .contact-info i {
                 margin-right: 0.5rem;
             }
+            .contact-info .text-danger {
+                color: #c85a5a !important;
+            }
+            .contact-info .text-primary {
+                color: #5a8eb8 !important;
+            }
+            .contact-info .text-success {
+                color: #5a9e6f !important;
+            }
             
             /* Clean spacing */
             .container-custom {
@@ -278,53 +319,85 @@
                 margin: 0 auto;
                 padding: 0 15px;
             }
+
+            body {
+                background-color: #f5f0e8;
+            }
         </style>
     </head>
     <body>
         <!-- Emergency Banner -->
         <div class="emergency-banner" id="emergencyBanner">
-            <div class="container text-center">
-                <p class="text-white mb-2 banner-text" style="font-size: 1.1rem; font-weight: 600;">
-                    <strong>In Crisis? You're Not Alone.</strong>
-                </p>
-                <a href="tel:988" class="btn emergency-btn">
-                    <i class="bi-telephone-fill me-2"></i>Call or Text 988
-                </a>
-                <p class="text-white mt-2 mb-0 banner-text" style="font-size: 0.9rem;">24/7 Suicide & Crisis Lifeline</p>
+            <div class="container">
+                <div class="emergency-banner-content">
+                    <a href="tel:988" class="emergency-btn">
+                        <i class="bi-telephone-fill me-2"></i>Crisis? Call or Text 988 Now
+                    </a>
+                </div>
             </div>
         </div>
 
         <!-- Navigation-->
         <nav class="navbar navbar-expand-lg navbar-light">
             <div class="container">
-                <p class="navbar-brand" >
+                <a class="navbar-brand" href="/">
                     <i class="bi-heart-fill text-danger me-2"></i>Resource Hub
-                </p>
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#crisis">Crisis Support</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="publicResourcesDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="bi-globe me-1"></i>Public Resources
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#crisis"><i class="bi-telephone me-2"></i>Crisis Support</a></li>
+                                <li><a class="dropdown-item" href="#therapy"><i class="bi-chat-dots me-2"></i>Therapy</a></li>
+                                <li><a class="dropdown-item" href="#support"><i class="bi-people me-2"></i>Support Groups</a></li>
+                                <li><a class="dropdown-item" href="#education"><i class="bi-book me-2"></i>Education</a></li>
+                                <li><a class="dropdown-item" href="#wellness"><i class="bi-heart me-2"></i>Wellness</a></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#therapy">Therapy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#support">Support Groups</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#education">Education</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#wellness">Wellness</a>
-                        </li>
+                        <% if (isLoggedIn) { %>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/dashboard">
+                                    <i class="bi-bookmark-heart me-1"></i>My Dashboard
+                                </a>
+                            </li>
+                            <% if (userLevel === 'M') { %>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                                        <i class="bi-gear-fill me-1"></i>Admin
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="/admin"><i class="bi-shield-lock-fill me-2"></i>Manage Resources</a></li>
+                                        <% if (userRoleId === 2) { %>
+                                            <li><a class="dropdown-item" href="/manager"><i class="bi-people-fill me-2"></i>Manage Users</a></li>
+                                        <% } %>
+                                    </ul>
+                                </li>
+                            <% } %>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown">
+                                    <i class="bi-person-circle me-1"></i>Profile
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/profile"><i class="bi-person-fill me-2"></i>My Profile</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="/logout"><i class="bi-box-arrow-right me-2"></i>Logout</a></li>
+                                </ul>
+                            </li>
+                        <% } else { %>
+                            <li class="nav-item">
+                                <a class="btn btn-outline-primary ms-lg-2" href="/login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-primary ms-2" href="/register">Sign Up</a>
+                            </li>
+                        <% } %>
                     </ul>
-                    <div class="d-flex ms-lg-3">
-                        <a class="btn btn-outline-primary btn-sm me-2" href="/login">Login</a>
-                        <a class="btn btn-primary btn-sm" href="/register">Sign Up</a>
-                    </div>
                 </div>
             </div>
         </nav>
@@ -338,12 +411,10 @@
         </section>
 
         <!-- CRISIS HOTLINES Section -->
-        <section class="resource-section bg-white" id="crisis">
+        <section class="resource-section" id="crisis">
             <div class="container">
                 <div class="category-header">
-                    <div class="category-icon text-danger">
-                        <i class="bi-telephone"></i>
-                    </div>
+                    <i class="bi-telephone category-icon" style="color: #c85a5a;"></i>
                     <h2 class="category-title">Crisis Hotlines</h2>
                 </div>
                 
@@ -438,12 +509,10 @@
         </section>
 
         <!-- THERAPY & COUNSELING Section -->
-        <section class="resource-section bg-light" id="therapy">
+        <section class="resource-section" id="therapy">
             <div class="container">
                 <div class="category-header">
-                    <div class="category-icon" style="color: #4a90e2;">
-                        <i class="bi-chat-dots"></i>
-                    </div>
+                    <i class="bi-chat-dots category-icon" style="color: #5a8eb8;"></i>
                     <h2 class="category-title">Therapy & Counseling</h2>
                 </div>
                 
@@ -508,12 +577,10 @@
         </section>
 
         <!-- SUPPORT GROUPS Section -->
-        <section class="resource-section bg-white" id="support">
+        <section class="resource-section" id="support">
             <div class="container">
                 <div class="category-header">
-                    <div class="category-icon text-success">
-                        <i class="bi-people"></i>
-                    </div>
+                    <i class="bi-people category-icon" style="color: #5a9e6f;"></i>
                     <h2 class="category-title">Support Groups & Communities</h2>
                 </div>
                 
@@ -584,12 +651,10 @@
         </section>
 
         <!-- EDUCATION Section -->
-        <section class="resource-section bg-light" id="education">
+        <section class="resource-section" id="education">
             <div class="container">
                 <div class="category-header">
-                    <div class="category-icon text-purple" style="color: #6f42c1;">
-                        <i class="bi-book"></i>
-                    </div>
+                    <i class="bi-book category-icon" style="color: #7a6a9a;"></i>
                     <h2 class="category-title">Educational Resources</h2>
                 </div>
                 
@@ -654,12 +719,10 @@
         </section>
 
         <!-- WELLNESS Section -->
-        <section class="resource-section bg-white" id="wellness">
+        <section class="resource-section" id="wellness">
             <div class="container">
                 <div class="category-header">
-                    <div class="category-icon" style="color: #17a2b8;">
-                        <i class="bi-heart"></i>
-                    </div>
+                    <i class="bi-heart category-icon" style="color: #5a9a9a;"></i>
                     <h2 class="category-title">Wellness Tools & Apps</h2>
                 </div>
                 
@@ -750,7 +813,7 @@
         </section>
 
         <!-- Footer -->
-        <footer class="footer bg-light py-5">
+        <footer class="footer py-5" style="background-color: #ebe4d8;">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-4 mb-4 mb-lg-0">
@@ -826,16 +889,6 @@
                 });
             });
 
-            // Emergency banner minimize on scroll
-            let hasScrolled = false;
-            const emergencyBanner = document.getElementById('emergencyBanner');
-            
-            window.addEventListener('scroll', function() {
-                if (!hasScrolled && window.scrollY > 50) {
-                    hasScrolled = true;
-                    emergencyBanner.classList.add('minimized');
-                }
-            });
         </script>
     </body>
 </html>

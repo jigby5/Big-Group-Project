@@ -135,11 +135,16 @@ app.post("/login", (req, res) => {
 });
 
 app.get("/", (req, res) => { // get request that is run on start (which is what the "/" does)
-    res.render("index")
+    res.render("index", {
+        isLoggedIn: req.session.isLoggedIn || false,
+        username: req.session.username || null,
+        userLevel: req.session.level || null,
+        userRoleId: req.session.roleid || null
+    });
 });
 
 app.get("/login", (req, res) => { // get request that is run with any a tags to login.ejs
-    res.render("login")
+    res.render("login", { error_message: null });
 });
 
 app.get("/register", (req, res) => { // get request that is run with any a tags to register.ejs
@@ -630,6 +635,8 @@ app.get("/admin", requireManager, async (req, res) => {
         res.render("admin", {
             username,
             vettedResources,
+            userLevel: req.session.level,
+            userRoleId: req.session.roleid,
             success_message: req.session.success_message || null,
             error_message: req.session.error_message || null
         });
@@ -742,6 +749,8 @@ app.get("/manager", requireManagerOnly, async (req, res) => {
             username,
             users,
             roles,
+            userLevel: req.session.level,
+            userRoleId: req.session.roleid,
             success_message: req.session.success_message || null,
             error_message: req.session.error_message || null
         });
