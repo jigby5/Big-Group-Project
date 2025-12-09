@@ -72,7 +72,27 @@
                 font-weight: 400;
                 opacity: 0.95;
             }
-            
+
+            /* Search Bar */
+            .search-container {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+
+            .search-container input {
+                padding: 0.75rem 1rem;
+                border: 2px solid rgba(255, 255, 255, 0.5);
+                background-color: rgba(255, 255, 255, 0.9);
+                border-radius: 8px;
+                font-size: 1rem;
+            }
+
+            .search-container input:focus {
+                border-color: #fff;
+                background-color: #fff;
+                box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+            }
+
             /* Resource Categories */
             .resource-section {
                 padding: 3rem 0;
@@ -391,6 +411,11 @@
             <div class="container">
                 <h1>You Are Not Alone</h1>
                 <p class="lead mb-0">Free mental health resources and crisis support<br>No account required • Confidential • Available 24/7</p>
+
+                <!-- Search Bar -->
+                <div class="search-container mt-4">
+                    <input type="text" id="resourceSearch" class="form-control" placeholder="Search resources by name, category, or description...">
+                </div>
             </div>
         </section>
 
@@ -869,6 +894,46 @@
                                 block: 'start'
                             });
                         }
+                    }
+                });
+            });
+
+            // Resource search functionality with keyword support
+            document.getElementById('resourceSearch').addEventListener('input', function(e) {
+                const searchInput = e.target.value.toLowerCase().trim();
+                const allResourceCards = document.querySelectorAll('.resource-card');
+
+                // Split search input into keywords (by spaces)
+                const keywords = searchInput.split(/\s+/).filter(k => k.length > 0);
+
+                allResourceCards.forEach(card => {
+                    const resourceName = card.querySelector('h5')?.textContent.toLowerCase() || '';
+                    const resourceDesc = card.querySelector('p')?.textContent.toLowerCase() || '';
+
+                    // Combine all searchable text
+                    const searchableText = `${resourceName} ${resourceDesc}`;
+
+                    // Check if ALL keywords are found in the searchable text
+                    const matches = keywords.length === 0 || keywords.every(keyword =>
+                        searchableText.includes(keyword)
+                    );
+
+                    const parentCol = card.closest('.col-md-6');
+                    if (parentCol) {
+                        parentCol.style.display = matches ? '' : 'none';
+                    }
+                });
+
+                // Show/hide category sections if all items are hidden
+                const sections = document.querySelectorAll('.resource-section');
+                sections.forEach(section => {
+                    const visibleCards = section.querySelectorAll('.col-md-6:not([style*="display: none"])');
+                    const categoryHeader = section.querySelector('.category-header');
+
+                    if (visibleCards.length === 0) {
+                        section.style.display = 'none';
+                    } else {
+                        section.style.display = '';
                     }
                 });
             });
