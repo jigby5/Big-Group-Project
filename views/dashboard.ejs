@@ -836,6 +836,7 @@
                 const data = await response.json();
 
                 if (data.success) {
+                    // Reload the page to show the resource in the correct section
                     window.location.reload();
                 } else {
                     console.log('Failed to update pin status. Please try again.');

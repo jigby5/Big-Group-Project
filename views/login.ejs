@@ -171,7 +171,59 @@
       color: #000;
       transform: scale(1.02);
     }
-    
+
+    /* Test credentials styling */
+    .test-credentials {
+      margin-top: 1.5rem;
+      padding: 1rem 1.5rem;
+      background-color: #e7f3ff;
+      border: 2px solid #5a8eb8;
+      border-radius: 8px;
+      text-align: left;
+    }
+
+    .test-credentials h6 {
+      color: #4a7ea8;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .test-credentials .row {
+      font-size: 0.9rem;
+      margin-left: 0;
+      margin-right: 0;
+    }
+
+    .test-credentials .col-6 {
+      padding: 0.25rem 0.5rem;
+    }
+
+    .test-credentials strong {
+      color: #212529;
+    }
+
+    .test-credentials .username {
+      color: #4a7ea8;
+      font-weight: 600;
+    }
+
+    .test-credentials .password {
+      color: #6c757d;
+      text-align: right;
+    }
+
+    .test-credentials .access-type {
+      font-size: 0.75rem;
+      color: #6c757d;
+      font-style: italic;
+      padding-left: 0.5rem;
+      text-align: left;
+    }
+
     /* Footer styling */
     footer {
       background-color: #ebe4d8;
@@ -233,10 +285,38 @@
         <a href="/register">Sign Up</a>
         <span class="divider">|</span>
         <a href="/">Home Page</a>
-        
+
         <a href="https://988lifeline.org/" target="_blank" class="crisis-link">
           <i class="bi-exclamation-triangle-fill me-2"></i>In Crisis? Click Here
         </a>
+      </div>
+
+      <!-- Test Credentials -->
+      <div class="test-credentials">
+        <h6><i class="bi-key-fill me-2"></i>Test Credentials</h6>
+        <div class="row">
+          <div class="col-6">
+            <strong>Username</strong>
+          </div>
+          <div class="col-6 text-end">
+            <strong>Password</strong>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6 username">user</div>
+          <div class="col-6 password">userpass</div>
+          <div class="col-12 access-type">(user access only)</div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-6 username">admin</div>
+          <div class="col-6 password">adminpass</div>
+          <div class="col-12 access-type">(resource management access)</div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-6 username">manager</div>
+          <div class="col-6 password">managerpass</div>
+          <div class="col-12 access-type">(complete access)</div>
+        </div>
       </div>
     </div>
   </div>
@@ -251,11 +331,6 @@
       <p class="mt-2">
         <a href="#!">Privacy Policy</a>
         <a href="#!">Terms of Service</a>
-      </p>
-      <p class="mt-2">
-        <a href="index.ejs.html" style="color: #4a90e2; font-weight: 600;">
-          <i class="bi-arrow-left me-1"></i>Back to Resources
-        </a>
       </p>
     </div>
   </footer>

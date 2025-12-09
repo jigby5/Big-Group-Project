@@ -246,7 +246,7 @@ app.get("/dashboard", requireAuth, async (req, res) => {
         }
 
         // Get all vetted resources with categories
-        const allResources = await knex('resources')
+        const vettedResources = await knex('resources')
             .select(
                 'resources.*',
                 'categories.categoryname',
@@ -258,10 +258,13 @@ app.get("/dashboard", requireAuth, async (req, res) => {
             .orderBy('resources.resourcename');
 
         // Get user's custom resources
-        const customResources = await knex('resources')
+        const userCustomResources = await knex('resources')
             .select('resources.*')
             .where('resources.submittedby_userid', user.userid)
             .orderBy('resources.resourcename');
+
+        // Combine vetted and custom resources
+        const allResources = [...vettedResources, ...userCustomResources];
 
         // Get user's pinned resources
         const pinnedResourceIds = await knex('user_resource')
@@ -271,9 +274,16 @@ app.get("/dashboard", requireAuth, async (req, res) => {
 
         const pinnedIds = new Set(pinnedResourceIds.map(r => r.resourceid));
 
-        // Separate pinned and unpinned resources
+        // Separate pinned and unpinned resources (includes custom resources)
         const pinnedResources = allResources.filter(r => pinnedIds.has(r.resourceid));
         const unpinnedResources = allResources.filter(r => !pinnedIds.has(r.resourceid));
+
+        // Get user's custom resources that are NOT pinned
+        const customResources = await knex('resources')
+            .select('resources.*')
+            .where('resources.submittedby_userid', user.userid)
+            .whereNotIn('resources.resourceid', Array.from(pinnedIds))
+            .orderBy('resources.resourcename');
 
         // Group resources by category
         const categories = {};
@@ -493,18 +503,9 @@ app.post("/api/add-resource", requireAuth, async (req, res) => {
             })
             .returning('resourceid');
 
-        // Automatically pin the new resource
-        await knex('user_resource').insert({
-            userid: user.userid,
-            resourceid: newResource.resourceid || newResource,
-            numviewed: 0,
-            favoritestatus: true,
-            rating: null
-        });
-
         res.json({
             success: true,
-            message: "Resource added and pinned successfully!",
+            message: "Resource added successfully!",
             resourceId: newResource.resourceid || newResource
         });
     } catch (err) {

@@ -276,9 +276,8 @@
         <label for="email" class="form-label">Email</label>
         <input type="email" id="email" name="email" class="form-control" placeholder="name@example.com" required>
 
-        <label for="phone" class="form-label">Phone (10 digits)</label>
-        <!-- Added pattern for 10-digit US phone number validation -->
-        <input type="tel" id="phone" name="phone" class="form-control" placeholder="e.g., 5551234567" pattern="[0-9]{10}" maxlength="10" required>
+        <label for="phone" class="form-label">Phone</label>
+        <input type="tel" id="phone" name="phone" class="form-control" placeholder="(555) 123-4567" maxlength="14" required>
 
         <!-- Hidden field for level - new users are regular users (U) by default -->
         <input type="hidden" id="level" name="level" value="U">
@@ -318,5 +317,50 @@
 
   <!-- Bootstrap core JS-->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Phone number formatting script -->
+  <script>
+    document.getElementById('phone').addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, ''); // Remove all non-digit characters
+
+      // Limit to 10 digits
+      if (value.length > 10) {
+        value = value.slice(0, 10);
+      }
+
+      // Format as (XXX) XXX-XXXX
+      let formattedValue = '';
+      if (value.length > 0) {
+        formattedValue = '(' + value.substring(0, 3);
+        if (value.length >= 4) {
+          formattedValue += ') ' + value.substring(3, 6);
+          if (value.length >= 7) {
+            formattedValue += '-' + value.substring(6, 10);
+          }
+        } else if (value.length === 3) {
+          formattedValue += ')';
+        }
+      }
+
+      e.target.value = formattedValue;
+    });
+
+    // Before form submission, convert phone to plain digits
+    document.querySelector('form').addEventListener('submit', function(e) {
+      const phoneInput = document.getElementById('phone');
+      const phoneValue = phoneInput.value.replace(/\D/g, '');
+
+      if (phoneValue.length !== 10) {
+        e.preventDefault();
+        phoneInput.setCustomValidity('Please enter a valid 10-digit phone number');
+        phoneInput.reportValidity();
+        return false;
+      }
+      phoneInput.setCustomValidity('');
+
+      // Store the plain number for submission
+      phoneInput.value = phoneValue;
+    });
+  </script>
 </body>
 </html>
