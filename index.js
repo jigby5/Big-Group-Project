@@ -134,13 +134,46 @@ app.post("/login", (req, res) => {
     });
 });
 
-app.get("/", (req, res) => { // get request that is run on start (which is what the "/" does)
-    res.render("index", {
-        isLoggedIn: req.session.isLoggedIn || false,
-        username: req.session.username || null,
-        userLevel: req.session.level || null,
-        userRoleId: req.session.roleid || null
-    });
+app.get("/", async (req, res) => { // get request that is run on start (which is what the "/" does)
+    try {
+        // Fetch vetted resources from database
+        const vettedResources = await knex('resources')
+            .select(
+                'resources.*',
+                'categories.categoryname',
+                'categories.categorydescription'
+            )
+            .leftJoin('categories', 'resources.categoryid', 'categories.categoryid')
+            .where('resources.isvetted', true)
+            .orderBy('categories.categoryid')
+            .orderBy('resources.resourcename');
+
+        console.log('=== INDEX PAGE LOAD ===');
+        console.log('Loaded', vettedResources.length, 'vetted resources for public page');
+        if (vettedResources.length > 0) {
+            console.log('First resource:', vettedResources[0].resourcename, '(ID:', vettedResources[0].resourceid, ')');
+            console.log('Last resource:', vettedResources[vettedResources.length - 1].resourcename, '(ID:', vettedResources[vettedResources.length - 1].resourceid, ')');
+            console.log('Sample resource details:', {
+                id: vettedResources[0].resourceid,
+                name: vettedResources[0].resourcename,
+                category: vettedResources[0].categoryname,
+                isvetted: vettedResources[0].isvetted
+            });
+        } else {
+            console.log('WARNING: No vetted resources found in database!');
+        }
+
+        res.render("index", {
+            isLoggedIn: req.session.isLoggedIn || false,
+            username: req.session.username || null,
+            userLevel: req.session.level || null,
+            userRoleId: req.session.roleid || null,
+            vettedResources: vettedResources
+        });
+    } catch (err) {
+        console.error("Error loading index page:", err);
+        res.status(500).send("Error loading page");
+    }
 });
 
 app.get("/login", (req, res) => { // get request that is run with any a tags to login.ejs
@@ -655,7 +688,24 @@ app.post("/api/admin/edit-resource", requireManager, async (req, res) => {
     try {
         const { resourceId, resourceName, resourceUrl, resourcePhone, resourceDesc, categoryId } = req.body;
 
-        await knex('resources')
+        console.log('=== ADMIN EDIT RESOURCE ===');
+        console.log('Resource ID:', resourceId);
+        console.log('User:', req.session.username, '(Role ID:', req.session.roleid, ')');
+
+        // Get the current values before updating
+        const beforeUpdate = await knex('resources')
+            .where('resourceid', resourceId)
+            .first();
+
+        console.log('Before update:', beforeUpdate ? {
+            name: beforeUpdate.resourcename,
+            category: beforeUpdate.categoryid,
+            isvetted: beforeUpdate.isvetted
+        } : 'Resource not found');
+
+        console.log('New values:', { resourceName, resourceUrl, resourcePhone, resourceDesc, categoryId });
+
+        const updateCount = await knex('resources')
             .where('resourceid', resourceId)
             .where('isvetted', true)
             .update({
@@ -665,6 +715,25 @@ app.post("/api/admin/edit-resource", requireManager, async (req, res) => {
                 resourcedesc: resourceDesc,
                 categoryid: categoryId
             });
+
+        console.log('Rows updated:', updateCount);
+
+        if (updateCount === 0) {
+            console.log('WARNING: No rows were updated. Resource may not exist or is not vetted.');
+            return res.status(404).json({ error: "Resource not found or is not vetted" });
+        }
+
+        // Verify the update
+        const afterUpdate = await knex('resources')
+            .where('resourceid', resourceId)
+            .first();
+
+        console.log('After update:', {
+            name: afterUpdate.resourcename,
+            category: afterUpdate.categoryid,
+            isvetted: afterUpdate.isvetted
+        });
+        console.log('✓ Update successful! Changes will be visible on next page load.');
 
         res.json({
             success: true,
@@ -681,10 +750,20 @@ app.post("/api/admin/delete-resource", requireManager, async (req, res) => {
     try {
         const { resourceId } = req.body;
 
-        await knex('resources')
+        console.log('=== ADMIN DELETE RESOURCE ===');
+        console.log('Deleting resource ID:', resourceId);
+
+        const deleteCount = await knex('resources')
             .where('resourceid', resourceId)
             .where('isvetted', true)
             .del();
+
+        console.log('Rows deleted:', deleteCount);
+
+        if (deleteCount === 0) {
+            console.log('WARNING: No rows were deleted. Resource may not exist or is not vetted.');
+            return res.status(404).json({ error: "Resource not found or is not vetted" });
+        }
 
         res.json({
             success: true,
@@ -701,7 +780,10 @@ app.post("/api/admin/add-resource", requireManager, async (req, res) => {
     try {
         const { resourceName, resourceUrl, resourcePhone, resourceDesc, categoryId } = req.body;
 
-        await knex('resources').insert({
+        console.log('=== ADMIN ADD RESOURCE ===');
+        console.log('Adding resource:', { resourceName, resourceUrl, resourcePhone, resourceDesc, categoryId });
+
+        const result = await knex('resources').insert({
             resourcename: resourceName,
             resourceurl: resourceUrl || null,
             resourcephone: resourcePhone || null,
@@ -710,6 +792,8 @@ app.post("/api/admin/add-resource", requireManager, async (req, res) => {
             isvetted: true,
             submittedby_userid: null
         });
+
+        console.log('Resource added successfully. Insert result:', result);
 
         res.json({
             success: true,

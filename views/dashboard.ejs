@@ -111,10 +111,11 @@
 
         /* Search Bar */
         .search-container {
-            max-width: 600px;
+            max-width: 800px;
         }
 
-        .search-container input {
+        .search-container input,
+        .search-container select {
             padding: 0.75rem 1rem;
             border: 2px solid rgba(255, 255, 255, 0.3);
             background-color: rgba(255, 255, 255, 0.9);
@@ -122,10 +123,44 @@
             font-size: 1rem;
         }
 
-        .search-container input:focus {
+        .search-container input:focus,
+        .search-container select:focus {
             border-color: #fff;
             background-color: #fff;
             box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+        }
+
+        .search-container select {
+            cursor: pointer;
+            font-weight: 500;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23212529' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 12px;
+            padding-right: 2.5rem;
+        }
+
+        .search-container select::-ms-expand {
+            display: none;
+        }
+
+        .search-container select option {
+            background-color: #fff;
+            color: #212529;
+            padding: 0.75rem 1rem;
+            font-weight: 500;
+        }
+
+        .search-container select option:hover {
+            background-color: #f8f9fa;
+        }
+
+        .search-container select option:checked {
+            background-color: #5a8eb8;
+            color: #fff;
         }
 
         /* Section Headers */
@@ -206,7 +241,7 @@
         /* Pin Button */
         .pin-btn {
             position: absolute;
-            top: 1.1rem;
+            top: 1.2rem;
             right: 0.75rem;
             background-color: #fff;
             border: 2px solid #6c757d;
@@ -330,6 +365,8 @@
             display: flex;
             align-items: center;
             margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid #ddd;
         }
 
         .category-icon {
@@ -550,9 +587,23 @@
             <h1><i class="bi-bookmark-heart me-2"></i>Your Personalized Resource Hub</h1>
             <p class="lead mb-0">Pin important resources to keep them at the top of your dashboard</p>
 
-            <!-- Search Bar -->
+            <!-- Search Bar and Filter -->
             <div class="search-container mt-3">
-                <input type="text" id="resourceSearch" class="form-control" placeholder="Search resources by name, category, or description...">
+                <div class="row g-2">
+                    <div class="col-md-8">
+                        <input type="text" id="resourceSearch" class="form-control" placeholder="Search resources by name, category, or description...">
+                    </div>
+                    <div class="col-md-4">
+                        <select id="categoryFilter" class="form-select">
+                            <option value="all">All Categories</option>
+                            <option value="Crisis Hotlines">Crisis Hotlines</option>
+                            <option value="Therapy & Counseling">Therapy & Counseling</option>
+                            <option value="Support Groups">Support Groups</option>
+                            <option value="Education">Education</option>
+                            <option value="Wellness Tools">Wellness Tools</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -671,12 +722,6 @@
         </div>
         <% } %>
 
-        <!-- All Resources by Category -->
-        <div class="section-header">
-            <i class="bi-grid-3x3-gap-fill"></i>
-            <h2>All Resources</h2>
-        </div>
-
         <%
         const categoryOrder = ['Crisis Hotlines', 'Therapy & Counseling', 'Support Groups', 'Education', 'Wellness Tools'];
         const categoryIcons = {
@@ -699,7 +744,7 @@
             if (!resources || resources.length === 0) return;
         %>
             <div class="category-section">
-                <div class="category-header">
+                <div class="category-header" style="border-bottom-color: <%= categoryColors[categoryName] %>;">
                     <div class="category-icon" style="color: <%= categoryColors[categoryName] %>;">
                         <i class="<%= categoryIcons[categoryName] %>"></i>
                     </div>
@@ -834,7 +879,6 @@
             </div>
         </div>
     </div>
-
     <!-- Footer -->
     <footer class="text-center py-4 mt-5" style="background-color: #ebe4d8;">
         <div class="container">
@@ -994,9 +1038,10 @@
             }
         }
 
-        // Resource search functionality with keyword support
-        document.getElementById('resourceSearch').addEventListener('input', function(e) {
-            const searchInput = e.target.value.toLowerCase().trim();
+        // Filter function to handle both search and category filter
+        function filterResources() {
+            const searchInput = document.getElementById('resourceSearch').value.toLowerCase().trim();
+            const categoryFilter = document.getElementById('categoryFilter').value;
             const allResourceCards = document.querySelectorAll('.resource-card');
 
             // Split search input into keywords (by spaces)
@@ -1011,37 +1056,54 @@
                 const searchableText = `${resourceName} ${resourceDesc} ${resourceBadge}`;
 
                 // Check if ALL keywords are found in the searchable text
-                const matches = keywords.length === 0 || keywords.every(keyword =>
+                const matchesSearch = keywords.length === 0 || keywords.every(keyword =>
                     searchableText.includes(keyword)
                 );
 
+                // Check if card is in the pinned section
+                const isPinned = card.closest('.pinned-section') !== null;
+
+                // Check if matches category filter (pinned resources always match category filter)
+                const matchesCategory = isPinned || categoryFilter === 'all' || resourceBadge.includes(categoryFilter.toLowerCase());
+
                 const parentCol = card.closest('.col-md-6');
                 if (parentCol) {
-                    parentCol.style.display = matches ? '' : 'none';
+                    parentCol.style.display = (matchesSearch && matchesCategory) ? '' : 'none';
                 }
             });
 
-            // Show/hide section headers if all items are hidden
-            const sections = document.querySelectorAll('.pinned-section, .section-header');
+            // Show/hide category sections if all items are hidden (matching index.ejs behavior)
+            const sections = document.querySelectorAll('.category-section');
             sections.forEach(section => {
-                const parentDiv = section.closest('div');
-                if (parentDiv) {
-                    const visibleCards = parentDiv.querySelectorAll('.col-md-6:not([style*="display: none"])');
-                    const nextRow = section.nextElementSibling;
+                const visibleCards = section.querySelectorAll('.col-md-6:not([style*="display: none"])');
 
-                    if (nextRow && nextRow.classList.contains('row')) {
-                        const visibleInRow = nextRow.querySelectorAll('.col-md-6:not([style*="display: none"])');
-                        if (visibleInRow.length === 0 && !section.classList.contains('pinned-section')) {
-                            section.style.display = 'none';
-                            nextRow.style.display = 'none';
-                        } else {
-                            section.style.display = '';
-                            nextRow.style.display = '';
-                        }
+                if (visibleCards.length === 0) {
+                    section.style.display = 'none';
+                } else {
+                    section.style.display = '';
+                }
+            });
+
+            // Also handle pinned section
+            const pinnedSection = document.querySelector('.pinned-section');
+            if (pinnedSection) {
+                const pinnedContainer = pinnedSection.parentElement;
+                if (pinnedContainer) {
+                    const visiblePinnedCards = pinnedContainer.querySelectorAll('.col-md-6:not([style*="display: none"])');
+                    if (visiblePinnedCards.length === 0) {
+                        pinnedContainer.style.display = 'none';
+                    } else {
+                        pinnedContainer.style.display = '';
                     }
                 }
-            });
-        });
+            }
+        }
+
+        // Resource search functionality with keyword support
+        document.getElementById('resourceSearch').addEventListener('input', filterResources);
+
+        // Category filter functionality
+        document.getElementById('categoryFilter').addEventListener('change', filterResources);
     </script>
 </body>
 </html>

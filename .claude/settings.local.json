@@ -1,11 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(node:*)",
-      "Bash(dir:*)",
-      "Bash(findstr:*)"
-    ],
-    "deny": [],
-    "ask": []
+      "Bash(cat:*)",
+      "Bash(echo:*)"
+    ]
   }
 }

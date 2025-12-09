@@ -492,26 +492,26 @@
         <%
         // Group resources by category
         const categories = {};
-        const categoryOrder = ['Crisis Hotlines', 'Therapy & Counseling', 'Support Groups', 'Education', 'Wellness Tools'];
+        const categoryOrder = ['Crisis Hotlines', 'Therapy & Counseling', 'Support Groups', 'Educational Resources', 'Wellness Tools'];
         const categoryIcons = {
             'Crisis Hotlines': 'bi-telephone',
             'Therapy & Counseling': 'bi-chat-dots',
             'Support Groups': 'bi-people',
-            'Education': 'bi-book',
+            'Educational Resources': 'bi-book',
             'Wellness Tools': 'bi-heart'
         };
         const categoryColors = {
             'Crisis Hotlines': '#c85a5a',
             'Therapy & Counseling': '#5a8eb8',
             'Support Groups': '#5a9e6f',
-            'Education': '#7a6a9a',
+            'Educational Resources': '#7a6a9a',
             'Wellness Tools': '#5a9a9a'
         };
         const categorySectionIds = {
             'Crisis Hotlines': 'crisis',
             'Therapy & Counseling': 'therapy',
             'Support Groups': 'support',
-            'Education': 'education',
+            'Educational Resources': 'education',
             'Wellness Tools': 'wellness'
         };
 
@@ -543,7 +543,7 @@
                                 let badgeClass = 'badge-crisis';
                                 if (categoryName === 'Therapy & Counseling') badgeClass = 'badge-therapy';
                                 else if (categoryName === 'Support Groups') badgeClass = 'badge-support';
-                                else if (categoryName === 'Education') badgeClass = 'badge-education';
+                                else if (categoryName === 'Educational Resources') badgeClass = 'badge-education';
                                 else if (categoryName === 'Wellness Tools') badgeClass = 'badge-wellness';
                                 %>
                                 <span class="resource-type-badge <%= badgeClass %>"><%= categoryName %></span>
@@ -573,11 +573,371 @@
                             </div>
                         </div>
                     <% }); %>
+                    <div class="col-md-6 mb-4">
+                        <div class="resource-card">
+                            <span class="resource-type-badge badge-crisis">24/7 Crisis Support</span>
+                            <h5>988 Suicide & Crisis Lifeline</h5>
+                            <p>Free, confidential support for people in distress. Prevention and crisis resources for you or your loved ones. Available 24/7 nationwide.</p>
+                            <div class="contact-info">
+                                <i class="bi-telephone-fill text-danger"></i>Call or Text: <strong>988</strong>
+                            </div>
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="tel:988" class="btn btn-call">
+                                    <i class="bi-telephone-fill me-1"></i> Call Now
+                                </a>
+                                <a href="sms:988" class="btn btn-text">
+                                    <i class="bi-chat-fill me-1"></i> Text Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Crisis Text Line -->
+                    <div class="col-md-6 mb-4">
+                        <div class="resource-card">
+                            <span class="resource-type-badge badge-crisis">Text Support</span>
+                            <h5>Crisis Text Line</h5>
+                            <p>Free, 24/7 crisis support via text. Connect with a trained Crisis Counselor who will listen and help you move from a hot moment to a cool calm.</p>
+                            <div class="contact-info">
+                                <i class="bi-chat-dots-fill text-primary"></i>Text <strong>HOME</strong> to <strong>741741</strong>
+                            </div>
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="sms:741741&body=HOME" class="btn btn-text">
+                                    <i class="bi-chat-fill me-1"></i> Text Now
+                                </a>
+                                <a href="https://www.crisistextline.org" target="_blank" class="btn btn-outline-secondary">
+                                    <i class="bi-box-arrow-up-right me-1"></i> Learn More
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Veterans Crisis Line -->
+                    <div class="col-md-6 mb-4">
+                        <div class="resource-card">
+                            <span class="resource-type-badge badge-crisis">Veterans Support</span>
+                            <h5>Veterans Crisis Line</h5>
+                            <p>Confidential help for Veterans and their families. Connect with caring, qualified responders from the Department of Veterans Affairs.</p>
+                            <div class="contact-info">
+                                <i class="bi-telephone-fill text-danger"></i>Call: <strong>988</strong> then Press <strong>1</strong>
+                            </div>
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="tel:988" class="btn btn-call">
+                                    <i class="bi-telephone-fill me-1"></i> Call Now
+                                </a>
+                                <a href="https://www.veteranscrisisline.net" target="_blank" class="btn btn-outline-secondary">
+                                    <i class="bi-box-arrow-up-right me-1"></i> Website
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- The Trevor Project -->
+                    <div class="col-md-6 mb-4">
+                        <div class="resource-card">
+                            <span class="resource-type-badge badge-crisis">LGBTQ+ Youth</span>
+                            <h5>The Trevor Project</h5>
+                            <p>Crisis intervention and suicide prevention for LGBTQ+ young people under 25. Text, chat, or call with trained counselors.</p>
+                            <div class="contact-info">
+                                <i class="bi-telephone-fill text-danger"></i>Call: <strong>1-866-488-7386</strong>
+                            </div>
+                            <div class="contact-info">
+                                <i class="bi-chat-dots-fill text-primary"></i>Text <strong>START</strong> to <strong>678-678</strong>
+                            </div>
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="tel:1-866-488-7386" class="btn btn-call btn-sm">
+                                    <i class="bi-telephone-fill me-1"></i> Call
+                                </a>
+                                <a href="sms:678678&body=START" class="btn btn-text btn-sm">
+                                    <i class="bi-chat-fill me-1"></i> Text
+                                </a>
+                                <a href="https://www.thetrevorproject.org" target="_blank" class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi-box-arrow-up-right me-1"></i> Website
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
-        <% }); %>
 
+        <!-- THERAPY & COUNSELING Section -->
+        <section class="resource-section" id="therapy">
+            <div class="container">
+                <div class="category-header">
+                    <i class="bi-chat-dots category-icon" style="color: #5a8eb8;"></i>
+                    <h2 class="category-title">Therapy & Counseling</h2>
+                </div>
+                
+                <div class="row">
+                    <!-- SAMHSA -->
+                    <div class="col-md-6 mb-4">
+                        <div class="resource-card">
+                            <span class="resource-type-badge badge-therapy">Treatment Locator</span>
+                            <h5>SAMHSA Treatment Locator</h5>
+                            <p>Find mental health and substance use treatment facilities in your area. Confidential and free service from the Substance Abuse and Mental Health Services Administration.</p>
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="https://findtreatment.gov" target="_blank" class="btn btn-visit">
+                                    <i class="bi-search me-1"></i> Find Treatment
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Psychology Today -->
+                    <div class="col-md-6 mb-4">
+                        <div class="resource-card">
+                            <span class="resource-type-badge badge-therapy">Therapist Directory</span>
+                            <h5>Psychology Today Therapist Finder</h5>
+                            <p>Search for therapists, psychiatrists, and treatment centers. Filter by insurance, specialty, location, and more to find the right fit for you.</p>
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="https://www.psychologytoday.com/us/therapists" target="_blank" class="btn btn-visit">
+                                    <i class="bi-search me-1"></i> Find Therapist
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BetterHelp -->
+                    <div class="col-md-6 mb-4">
+                        <div class="resource-card">
+                            <span class="resource-type-badge badge-therapy">Online Therapy</span>
+                            <h5>BetterHelp</h5>
+                            <p>Online counseling and therapy services with licensed therapists. Accessible, affordable, and convenient professional counseling anytime, anywhere.</p>
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="https://www.betterhelp.com" target="_blank" class="btn btn-visit">
+                                    <i class="bi-box-arrow-up-right me-1"></i> Visit Site
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Open Path -->
+                    <div class="col-md-6 mb-4">
+                        <div class="resource-card">
+                            <span class="resource-type-badge badge-therapy">Affordable Care</span>
+                            <h5>Open Path Collective</h5>
+                            <p>A nonprofit network providing affordable mental health care. Sessions between $30-$80 with licensed therapists offering in-office and online care.</p>
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="https://openpathcollective.org" target="_blank" class="btn btn-visit">
+                                    <i class="bi-box-arrow-up-right me-1"></i> Learn More
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SUPPORT GROUPS Section -->
+        <section class="resource-section" id="support">
+            <div class="container">
+                <div class="category-header">
+                    <i class="bi-people category-icon" style="color: #5a9e6f;"></i>
+                    <h2 class="category-title">Support Groups & Communities</h2>
+                </div>
+                
+                <div class="row">
+                    <!-- NAMI -->
+                    <div class="col-md-6 mb-4">
+                        <div class="resource-card">
+                            <span class="resource-type-badge badge-support">Support Network</span>
+                            <h5>NAMI (National Alliance on Mental Illness)</h5>
+                            <p>Advocacy, education, support and public awareness for individuals and families affected by mental illness. Find local support groups and resources.</p>
+                            <div class="contact-info">
+                                <i class="bi-telephone-fill text-success"></i>Helpline: <strong>1-800-950-NAMI (6264)</strong>
+                            </div>
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="tel:1-800-950-6264" class="btn btn-call">
+                                    <i class="bi-telephone-fill me-1"></i> Call
+                                </a>
+                                <a href="https://www.nami.org" target="_blank" class="btn btn-visit">
+                                    <i class="bi-box-arrow-up-right me-1"></i> Website
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mental Health America -->
+                    <div class="col-md-6 mb-4">
+                        <div class="resource-card">
+                            <span class="resource-type-badge badge-support">Community Support</span>
+                            <h5>Mental Health America</h5>
+                            <p>Leading community-based nonprofit dedicated to addressing mental health needs. Free mental health screenings and resources available.</p>
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="https://www.mhanational.org" target="_blank" class="btn btn-visit">
+                                    <i class="bi-box-arrow-up-right me-1"></i> Visit Site
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 7 Cups -->
+                    <div class="col-md-6 mb-4">
+                        <div class="resource-card">
+                            <span class="resource-type-badge badge-support">Peer Support</span>
+                            <h5>7 Cups</h5>
+                            <p>Free emotional support through trained active listeners. Connect 24/7 with people who care and receive judgment-free support.</p>
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="https://www.7cups.com" target="_blank" class="btn btn-visit">
+                                    <i class="bi-box-arrow-up-right me-1"></i> Get Support
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Support Groups Central -->
+                    <div class="col-md-6 mb-4">
+                        <div class="resource-card">
+                            <span class="resource-type-badge badge-support">Group Directory</span>
+                            <h5>Support Groups Central</h5>
+                            <p>Directory of support groups for mental health, addiction, grief, chronic illness, and more. Find support groups meeting in your local area.</p>
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="https://www.supportgroupscentral.com" target="_blank" class="btn btn-visit">
+                                    <i class="bi-search me-1"></i> Find Groups
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EDUCATION Section -->
+        <section class="resource-section" id="education">
+            <div class="container">
+                <div class="category-header">
+                    <i class="bi-book category-icon" style="color: #7a6a9a;"></i>
+                    <h2 class="category-title">Educational Resources</h2>
+                </div>
+                
+                <div class="row">
+                    <!-- NIMH -->
+                    <div class="col-md-6 mb-4">
+                        <div class="resource-card">
+                            <span class="resource-type-badge badge-education">Research & Info</span>
+                            <h5>National Institute of Mental Health (NIMH)</h5>
+                            <p>Leading federal agency for research on mental disorders. Comprehensive information on mental health topics, treatment options, and latest research.</p>
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="https://www.nimh.nih.gov" target="_blank" class="btn btn-visit">
+                                    <i class="bi-box-arrow-up-right me-1"></i> Visit Site
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AFSP -->
+                    <div class="col-md-6 mb-4">
+                        <div class="resource-card">
+                            <span class="resource-type-badge badge-education">Prevention</span>
+                            <h5>American Foundation for Suicide Prevention</h5>
+                            <p>Educational resources on warning signs, prevention strategies, and support for loss survivors. Research-based information and advocacy.</p>
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="https://afsp.org" target="_blank" class="btn btn-visit">
+                                    <i class="bi-box-arrow-up-right me-1"></i> Learn More
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mental Health First Aid -->
+                    <div class="col-md-6 mb-4">
+                        <div class="resource-card">
+                            <span class="resource-type-badge badge-education">Training</span>
+                            <h5>Mental Health First Aid</h5>
+                            <p>Learn how to identify, understand and respond to signs of mental illnesses and substance use disorders. Evidence-based training courses available.</p>
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="https://www.mentalhealthfirstaid.org" target="_blank" class="btn btn-visit">
+                                    <i class="bi-box-arrow-up-right me-1"></i> Get Trained
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ADAA -->
+                    <div class="col-md-6 mb-4">
+                        <div class="resource-card">
+                            <span class="resource-type-badge badge-education">Anxiety & Depression</span>
+                            <h5>Anxiety & Depression Association of America</h5>
+                            <p>Information about anxiety, depression, and related conditions including symptoms, treatment options, and finding help.</p>
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="https://adaa.org" target="_blank" class="btn btn-visit">
+                                    <i class="bi-box-arrow-up-right me-1"></i> Visit Site
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- WELLNESS Section -->
+        <section class="resource-section" id="wellness">
+            <div class="container">
+                <div class="category-header">
+                    <i class="bi-heart category-icon" style="color: #5a9a9a;"></i>
+                    <h2 class="category-title">Wellness Tools & Apps</h2>
+                </div>
+                
+                <div class="row">
+                    <!-- Calm -->
+                    <div class="col-md-6 mb-4">
+                        <div class="resource-card">
+                            <span class="resource-type-badge badge-wellness">Meditation</span>
+                            <h5>Calm</h5>
+                            <p>Meditation and sleep app designed to help reduce stress, sleep better, and live a happier, healthier life. Guided meditations and sleep stories.</p>
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="https://www.calm.com" target="_blank" class="btn btn-visit">
+                                    <i class="bi-box-arrow-up-right me-1"></i> Try Calm
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Headspace -->
+                    <div class="col-md-6 mb-4">
+                        <div class="resource-card">
+                            <span class="resource-type-badge badge-wellness">Mindfulness</span>
+                            <h5>Headspace</h5>
+                            <p>Hundreds of guided meditations on stress, sleep, focus, and anxiety. Science-backed approach to mindfulness and meditation.</p>
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="https://www.headspace.com" target="_blank" class="btn btn-visit">
+                                    <i class="bi-box-arrow-up-right me-1"></i> Explore
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sanvello -->
+                    <div class="col-md-6 mb-4">
+                        <div class="resource-card">
+                            <span class="resource-type-badge badge-wellness">Mental Health</span>
+                            <h5>Sanvello</h5>
+                            <p>Mental health app for stress, anxiety, and depression based on cognitive behavioral therapy, mindfulness, and mood tracking.</p>
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="https://www.sanvello.com" target="_blank" class="btn btn-visit">
+                                    <i class="bi-box-arrow-up-right me-1"></i> Get App
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- What's Up -->
+                    <div class="col-md-6 mb-4">
+                        <div class="resource-card">
+                            <span class="resource-type-badge badge-wellness">Self-Help</span>
+                            <h5>What's Up?</h5>
+                            <p>Free mental health app using Cognitive Behavioral Therapy and Acceptance Commitment Therapy methods to help cope with depression and anxiety.</p>
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="https://www.whatsupapp.com" target="_blank" class="btn btn-visit">
+                                    <i class="bi-box-arrow-up-right me-1"></i> Download
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- CTA Section - Sign Up Optional -->
         <section class="cta-section text-center" id="signup">
