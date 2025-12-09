@@ -109,6 +109,25 @@
             margin-bottom: 0.5rem;
         }
 
+        /* Search Bar */
+        .search-container {
+            max-width: 600px;
+        }
+
+        .search-container input {
+            padding: 0.75rem 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .search-container input:focus {
+            border-color: #fff;
+            background-color: #fff;
+            box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+        }
+
         /* Section Headers */
         .section-header {
             display: flex;
@@ -530,6 +549,11 @@
         <div class="container">
             <h1><i class="bi-bookmark-heart me-2"></i>Your Personalized Resource Hub</h1>
             <p class="lead mb-0">Pin important resources to keep them at the top of your dashboard</p>
+
+            <!-- Search Bar -->
+            <div class="search-container mt-3">
+                <input type="text" id="resourceSearch" class="form-control" placeholder="Search resources by name, category, or description...">
+            </div>
         </div>
     </div>
 
@@ -969,6 +993,55 @@
                 console.log('An error occurred. Please try again.');
             }
         }
+
+        // Resource search functionality with keyword support
+        document.getElementById('resourceSearch').addEventListener('input', function(e) {
+            const searchInput = e.target.value.toLowerCase().trim();
+            const allResourceCards = document.querySelectorAll('.resource-card');
+
+            // Split search input into keywords (by spaces)
+            const keywords = searchInput.split(/\s+/).filter(k => k.length > 0);
+
+            allResourceCards.forEach(card => {
+                const resourceName = card.querySelector('h5')?.textContent.toLowerCase() || '';
+                const resourceDesc = card.querySelector('p')?.textContent.toLowerCase() || '';
+                const resourceBadge = card.querySelector('.resource-type-badge')?.textContent.toLowerCase() || '';
+
+                // Combine all searchable text
+                const searchableText = `${resourceName} ${resourceDesc} ${resourceBadge}`;
+
+                // Check if ALL keywords are found in the searchable text
+                const matches = keywords.length === 0 || keywords.every(keyword =>
+                    searchableText.includes(keyword)
+                );
+
+                const parentCol = card.closest('.col-md-6');
+                if (parentCol) {
+                    parentCol.style.display = matches ? '' : 'none';
+                }
+            });
+
+            // Show/hide section headers if all items are hidden
+            const sections = document.querySelectorAll('.pinned-section, .section-header');
+            sections.forEach(section => {
+                const parentDiv = section.closest('div');
+                if (parentDiv) {
+                    const visibleCards = parentDiv.querySelectorAll('.col-md-6:not([style*="display: none"])');
+                    const nextRow = section.nextElementSibling;
+
+                    if (nextRow && nextRow.classList.contains('row')) {
+                        const visibleInRow = nextRow.querySelectorAll('.col-md-6:not([style*="display: none"])');
+                        if (visibleInRow.length === 0 && !section.classList.contains('pinned-section')) {
+                            section.style.display = 'none';
+                            nextRow.style.display = 'none';
+                        } else {
+                            section.style.display = '';
+                            nextRow.style.display = '';
+                        }
+                    }
+                }
+            });
+        });
     </script>
 </body>
 </html>
