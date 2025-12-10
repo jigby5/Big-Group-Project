@@ -104,6 +104,36 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
+        /* Global button styling with outlines */
+        .btn {
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.3);
+        }
+
+        .btn-success {
+            box-shadow: 0 0 0 3px rgba(90, 158, 111, 0.2);
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 0 0 4px rgba(90, 158, 111, 0.3);
+        }
+
+        .btn-secondary {
+            box-shadow: 0 0 0 3px rgba(108, 117, 125, 0.2);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 0 0 4px rgba(108, 117, 125, 0.3);
+        }
+
         .btn-edit {
             background-color: #e6c547;
             border-color: #e6c547;
@@ -111,6 +141,7 @@
             border-radius: 6px;
             font-weight: 600;
             transition: all 0.3s ease;
+            box-shadow: 0 0 0 3px rgba(230, 197, 71, 0.2);
         }
 
         .btn-edit:hover {
@@ -118,7 +149,7 @@
             border-color: #d4b336;
             color: #212529;
             transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(230, 197, 71, 0.3);
+            box-shadow: 0 0 0 4px rgba(230, 197, 71, 0.3);
         }
 
         .btn-delete {
@@ -128,6 +159,7 @@
             border-radius: 6px;
             font-weight: 600;
             transition: all 0.3s ease;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.2);
         }
 
         .btn-delete:hover {
@@ -135,7 +167,7 @@
             border-color: #c82333;
             color: white;
             transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+            box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.3);
         }
 
         .modal-header {
@@ -382,11 +414,27 @@
         <% } %>
 
         <div class="resource-table">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3><i class="bi-list-check me-2"></i>All Public Resources</h3>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addResourceModal">
-                    <i class="bi-plus-circle me-1"></i>Add New Resource
-                </button>
+            <div class="mb-3">
+                <h3 class="mb-3"><i class="bi-list-check me-2"></i>All Public Resources</h3>
+
+                <!-- Search Bar -->
+                <form action="/admin" method="GET" class="row g-2">
+                    <div class="col-md-10">
+                        <input type="text" class="form-control" name="search" placeholder="Search by resource name, description, or category..." value="<%= search %>">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#addResourceModal">
+                            <i class="bi-plus-circle me-1"></i>Add New
+                        </button>
+                    </div>
+                </form>
+                <% if (search) { %>
+                    <div class="mt-2">
+                        <a href="/admin" class="btn btn-sm btn-secondary">
+                            <i class="bi-x-circle me-1"></i>Clear Search
+                        </a>
+                    </div>
+                <% } %>
             </div>
 
             <div class="table-responsive">
@@ -465,7 +513,7 @@
                             <input type="url" class="form-control" id="addResourceUrl" placeholder="https://example.com">
                         </div>
                         <div class="mb-3">
-                            <label for="addResourcePhone" class="form-label">Phone Number</label>
+                            <label for="addResourcePhone" class="form-label">Phone Number (optional)</label>
                             <input type="text" class="form-control" id="addResourcePhone" placeholder="1-800-123-4567">
                         </div>
                         <div class="mb-3">

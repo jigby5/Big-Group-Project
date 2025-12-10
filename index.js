@@ -136,43 +136,50 @@ app.post("/login", (req, res) => {
 
 app.get("/", async (req, res) => { // get request that is run on start (which is what the "/" does)
     try {
-        // Fetch vetted resources from database
+        // Fetch all public resources with their categories
         const vettedResources = await knex('resources')
             .select(
-                'resources.*',
+                'resources.resourceid',
+                'resources.resourcename',
+                'resources.resourceurl',
+                'resources.resourcephone',
+                'resources.resourcedesc',
                 'categories.categoryname',
-                'categories.categorydescription'
+                'categories.categoryid'
             )
             .leftJoin('categories', 'resources.categoryid', 'categories.categoryid')
-            .where('resources.isvetted', true)
+            .where('resources.submittedby_userid', null) // Only public resources, not user-created ones
             .orderBy('categories.categoryid')
             .orderBy('resources.resourcename');
 
-        console.log('=== INDEX PAGE LOAD ===');
-        console.log('Loaded', vettedResources.length, 'vetted resources for public page');
-        if (vettedResources.length > 0) {
-            console.log('First resource:', vettedResources[0].resourcename, '(ID:', vettedResources[0].resourceid, ')');
-            console.log('Last resource:', vettedResources[vettedResources.length - 1].resourcename, '(ID:', vettedResources[vettedResources.length - 1].resourceid, ')');
-            console.log('Sample resource details:', {
-                id: vettedResources[0].resourceid,
-                name: vettedResources[0].resourcename,
-                category: vettedResources[0].categoryname,
-                isvetted: vettedResources[0].isvetted
-            });
-        } else {
-            console.log('WARNING: No vetted resources found in database!');
-        }
+        // Organize resources by category
+        const categories = {};
+        vettedResources.forEach(resource => {
+            const categoryName = resource.categoryname || 'Uncategorized';
+            if (!categories[categoryName]) {
+                categories[categoryName] = [];
+            }
+            categories[categoryName].push(resource);
+        });
 
         res.render("index", {
             isLoggedIn: req.session.isLoggedIn || false,
             username: req.session.username || null,
             userLevel: req.session.level || null,
             userRoleId: req.session.roleid || null,
+            categories: categories,
             vettedResources: vettedResources
         });
     } catch (err) {
-        console.error("Error loading index page:", err);
-        res.status(500).send("Error loading page");
+        console.error("Error fetching resources:", err);
+        res.render("index", {
+            isLoggedIn: req.session.isLoggedIn || false,
+            username: req.session.username || null,
+            userLevel: req.session.level || null,
+            userRoleId: req.session.roleid || null,
+            categories: {},
+            vettedResources: [] // Pass an empty array on error
+        });
     }
 });
 
@@ -446,7 +453,7 @@ app.get("/profile", requireAuth, async (req, res) => {
 app.post("/profile", requireAuth, async (req, res) => {
     try {
         const username = req.session.username;
-        const { email, phone } = req.body;
+        const { email, phone, password } = req.body;
 
         // Validate inputs
         if (!email || !phone) {
@@ -463,13 +470,22 @@ app.post("/profile", requireAuth, async (req, res) => {
             });
         }
 
+        // Prepare update object
+        const updateData = {
+            email: email,
+            phone: phone
+        };
+
+        // If password is provided, hash and add to update
+        if (password && password.trim() !== '') {
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
+            updateData.password = hashedPassword;
+        }
+
         // Update user info
         await knex('users')
             .where('username', username)
-            .update({
-                email: email,
-                phone: phone
-            });
+            .update(updateData);
 
         // Get updated user info
         const user = await knex('users')
@@ -504,7 +520,7 @@ app.post("/profile", requireAuth, async (req, res) => {
 app.post("/api/add-resource", requireAuth, async (req, res) => {
     try {
         const username = req.session.username;
-        const { resourceName, resourceUrl, resourceDesc } = req.body;
+        const { resourceName, resourceUrl, resourcePhone, resourceDesc } = req.body;
 
         // Validate inputs
         if (!resourceName || !resourceUrl) {
@@ -528,11 +544,11 @@ app.post("/api/add-resource", requireAuth, async (req, res) => {
             .insert({
                 resourcename: resourceName,
                 resourceurl: resourceUrl,
+                resourcephone: resourcePhone || null,
                 resourcedesc: resourceDesc || 'Custom resource added by user',
                 submittedby_userid: user.userid,
                 isvetted: false,
-                categoryid: null,
-                resourcephone: null
+                categoryid: null
             })
             .returning('resourceid');
 
@@ -654,10 +670,11 @@ app.post("/api/edit-resource", requireAuth, async (req, res) => {
 // Admin page - Edit vetted resources on main page
 app.get("/admin", requireManager, async (req, res) => {
     try {
-        const username = req.session.username;
+        const { username } = req.session;
+        const { search } = req.query;
 
         // Get all vetted resources
-        const vettedResources = await knex('resources')
+        const query = knex('resources')
             .leftJoin('categories', 'resources.categoryid', 'categories.categoryid')
             .select(
                 'resources.*',
@@ -666,13 +683,25 @@ app.get("/admin", requireManager, async (req, res) => {
             .where('resources.isvetted', true)
             .orderBy('resources.resourceid');
 
+        if (search) {
+            query.where(builder => {
+                builder.where('resources.resourcename', 'ilike', `%${search}%`)
+                    // Only search description if it's not null
+                    .orWhereNotNull('resources.resourcedesc').andWhere('resources.resourcedesc', 'ilike', `%${search}%`)
+                    .orWhere('categories.categoryname', 'ilike', `%${search}%`);
+            });
+        }
+
+        const vettedResources = await query;
+
         res.render("admin", {
             username,
             vettedResources,
             userLevel: req.session.level,
             userRoleId: req.session.roleid,
             success_message: req.session.success_message || null,
-            error_message: req.session.error_message || null
+            error_message: req.session.error_message || null,
+            search: search || ''
         });
 
         delete req.session.success_message;
@@ -688,24 +717,7 @@ app.post("/api/admin/edit-resource", requireManager, async (req, res) => {
     try {
         const { resourceId, resourceName, resourceUrl, resourcePhone, resourceDesc, categoryId } = req.body;
 
-        console.log('=== ADMIN EDIT RESOURCE ===');
-        console.log('Resource ID:', resourceId);
-        console.log('User:', req.session.username, '(Role ID:', req.session.roleid, ')');
-
-        // Get the current values before updating
-        const beforeUpdate = await knex('resources')
-            .where('resourceid', resourceId)
-            .first();
-
-        console.log('Before update:', beforeUpdate ? {
-            name: beforeUpdate.resourcename,
-            category: beforeUpdate.categoryid,
-            isvetted: beforeUpdate.isvetted
-        } : 'Resource not found');
-
-        console.log('New values:', { resourceName, resourceUrl, resourcePhone, resourceDesc, categoryId });
-
-        const updateCount = await knex('resources')
+        await knex('resources')
             .where('resourceid', resourceId)
             .where('isvetted', true)
             .update({
@@ -715,25 +727,6 @@ app.post("/api/admin/edit-resource", requireManager, async (req, res) => {
                 resourcedesc: resourceDesc,
                 categoryid: categoryId
             });
-
-        console.log('Rows updated:', updateCount);
-
-        if (updateCount === 0) {
-            console.log('WARNING: No rows were updated. Resource may not exist or is not vetted.');
-            return res.status(404).json({ error: "Resource not found or is not vetted" });
-        }
-
-        // Verify the update
-        const afterUpdate = await knex('resources')
-            .where('resourceid', resourceId)
-            .first();
-
-        console.log('After update:', {
-            name: afterUpdate.resourcename,
-            category: afterUpdate.categoryid,
-            isvetted: afterUpdate.isvetted
-        });
-        console.log('✓ Update successful! Changes will be visible on next page load.');
 
         res.json({
             success: true,
@@ -750,20 +743,10 @@ app.post("/api/admin/delete-resource", requireManager, async (req, res) => {
     try {
         const { resourceId } = req.body;
 
-        console.log('=== ADMIN DELETE RESOURCE ===');
-        console.log('Deleting resource ID:', resourceId);
-
-        const deleteCount = await knex('resources')
+        await knex('resources')
             .where('resourceid', resourceId)
             .where('isvetted', true)
             .del();
-
-        console.log('Rows deleted:', deleteCount);
-
-        if (deleteCount === 0) {
-            console.log('WARNING: No rows were deleted. Resource may not exist or is not vetted.');
-            return res.status(404).json({ error: "Resource not found or is not vetted" });
-        }
 
         res.json({
             success: true,
@@ -780,10 +763,7 @@ app.post("/api/admin/add-resource", requireManager, async (req, res) => {
     try {
         const { resourceName, resourceUrl, resourcePhone, resourceDesc, categoryId } = req.body;
 
-        console.log('=== ADMIN ADD RESOURCE ===');
-        console.log('Adding resource:', { resourceName, resourceUrl, resourcePhone, resourceDesc, categoryId });
-
-        const result = await knex('resources').insert({
+        await knex('resources').insert({
             resourcename: resourceName,
             resourceurl: resourceUrl || null,
             resourcephone: resourcePhone || null,
@@ -792,8 +772,6 @@ app.post("/api/admin/add-resource", requireManager, async (req, res) => {
             isvetted: true,
             submittedby_userid: null
         });
-
-        console.log('Resource added successfully. Insert result:', result);
 
         res.json({
             success: true,
@@ -812,10 +790,10 @@ app.post("/api/admin/add-resource", requireManager, async (req, res) => {
 // Manager page - Manage user roles
 app.get("/manager", requireManagerOnly, async (req, res) => {
     try {
-        const username = req.session.username;
+        const { username } = req.session;
+        const { search } = req.query;
 
-        // Get all users with their roles
-        const users = await knex('users')
+        const query = knex('users')
             .leftJoin('roles', 'users.roleid', 'roles.roleid')
             .select(
                 'users.userid',
@@ -827,6 +805,18 @@ app.get("/manager", requireManagerOnly, async (req, res) => {
             )
             .orderBy('users.userid');
 
+        if (search) {
+            query.where(builder => {
+                builder.where('users.username', 'ilike', `%${search}%`)
+                    // Only search email if it's not null
+                    .orWhereNotNull('users.email').andWhere('users.email', 'ilike', `%${search}%`)
+                    .orWhere('roles.rolename', 'ilike', `%${search}%`);
+            });
+        }
+
+        // Get all users with their roles
+        const users = await query;
+
         // Get all roles
         const roles = await knex('roles').select('*');
 
@@ -837,7 +827,8 @@ app.get("/manager", requireManagerOnly, async (req, res) => {
             userLevel: req.session.level,
             userRoleId: req.session.roleid,
             success_message: req.session.success_message || null,
-            error_message: req.session.error_message || null
+            error_message: req.session.error_message || null,
+            search: search || ''
         });
 
         delete req.session.success_message;
@@ -867,5 +858,115 @@ app.post("/api/manager/update-role", requireManagerOnly, async (req, res) => {
     } catch (err) {
         console.error("Error updating user role:", err);
         res.status(500).json({ error: "Failed to update user role" });
+    }
+});
+
+// Manager API - Delete user
+app.post("/api/manager/delete-user", requireManagerOnly, async (req, res) => {
+    try {
+        const { userId } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({ error: "User ID is required" });
+        }
+
+        // Prevent managers from deleting themselves
+        const currentUser = await knex('users')
+            .select('userid')
+            .where('username', req.session.username)
+            .first();
+
+        if (currentUser && currentUser.userid === parseInt(userId)) {
+            return res.status(400).json({ error: "You cannot delete your own account" });
+        }
+
+        // Delete user's pinned resources first (due to foreign key constraint)
+        await knex('user_resource')
+            .where('userid', userId)
+            .delete();
+
+        // Delete user's custom resources
+        await knex('resources')
+            .where('submittedby_userid', userId)
+            .delete();
+
+        // Delete the user
+        await knex('users')
+            .where('userid', userId)
+            .delete();
+
+        res.json({
+            success: true,
+            message: "User deleted successfully!"
+        });
+    } catch (err) {
+        console.error("Error deleting user:", err);
+        res.status(500).json({ error: "Failed to delete user" });
+    }
+});
+
+// Manager API - Create new user
+app.post("/api/manager/create-user", requireManagerOnly, async (req, res) => {
+    try {
+        const { username, password, email, phone, level, roleId } = req.body;
+
+        // Validate inputs
+        if (!username || !password || !email || !phone || !level) {
+            return res.status(400).json({ error: "All fields are required" });
+        }
+
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        // Create the new user
+        const newUser = {
+            username: username,
+            password: hashedPassword,
+            email: email,
+            phone: phone,
+            level: level,
+            roleid: roleId
+        };
+
+        await knex('users').insert(newUser);
+
+        // Get the newly created user's ID
+        const newlyCreatedUser = await knex('users')
+            .select('userid')
+            .where('username', username)
+            .first();
+
+        if (newlyCreatedUser) {
+            // Get the 988 Suicide & Crisis Lifeline resource ID
+            const crisisResource = await knex('resources')
+                .select('resourceid')
+                .where('resourcename', '988 Suicide & Crisis Lifeline')
+                .first();
+
+            if (crisisResource) {
+                // Pin the crisis hotline by default for the new user
+                await knex('user_resource').insert({
+                    userid: newlyCreatedUser.userid,
+                    resourceid: crisisResource.resourceid,
+                    numviewed: 0,
+                    favoritestatus: true,
+                    rating: null
+                });
+            }
+        }
+
+        res.json({
+            success: true,
+            message: "User created successfully!"
+        });
+    } catch (err) {
+        console.error("Error creating user:", err);
+
+        // Check for unique constraint violations
+        if (err.message && (err.message.includes('duplicate') || err.message.includes('unique'))) {
+            return res.status(400).json({ error: "Username or email already exists" });
+        }
+
+        res.status(500).json({ error: "Failed to create user" });
     }
 });

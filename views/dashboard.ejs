@@ -168,11 +168,29 @@
             display: flex;
             align-items: center;
             margin-bottom: 1.5rem;
-            padding-bottom: 0.75rem;
+            padding: 0.75rem 0 1rem 0;
             border-bottom: 3px solid #5a8eb8;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .section-header i {
+        .section-header.collapsed {
+            border-bottom: none;
+            margin-bottom: 1rem;
+            padding: 0 0;
+        }
+
+        .section-header:hover {
+            background-color: rgba(90, 142, 184, 0.05);
+            border-radius: 8px;
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+            margin-left: -0.5rem;
+            margin-right: -0.5rem;
+        }
+
+        .section-header i.section-icon {
             font-size: 2rem;
             margin-right: 1rem;
             color: #5a8eb8;
@@ -183,6 +201,33 @@
             font-size: 1.75rem;
             font-weight: 700;
             color: #212529;
+            flex: 1;
+        }
+
+        .collapse-btn {
+            font-size: 1.5rem;
+            color: #5a8eb8;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-left: auto;
+        }
+
+        .collapse-btn.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .collapsible-content {
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                        margin 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 5000px;
+            opacity: 1;
+        }
+
+        .collapsible-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+            margin-bottom: 0 !important;
         }
 
         /* Resource Cards */
@@ -266,14 +311,14 @@
         }
 
         .pin-btn.pinned {
-            background-color: #ffc107;
-            border-color: #ffc107;
+            background-color: #e6c547;
+            border-color: #e6c547;
             color: #fff;
         }
 
         .pin-btn.pinned:hover {
-            background-color: #e0a800;
-            border-color: #e0a800;
+            background-color: #d4b336;
+            border-color: #d4b336;
         }
 
         /* Badges */
@@ -311,6 +356,36 @@
             color: #3a7a7a;
         }
 
+        /* Global button styling with outlines */
+        .btn {
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.3);
+        }
+
+        .btn-success {
+            box-shadow: 0 0 0 3px rgba(90, 158, 111, 0.2);
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 0 0 4px rgba(90, 158, 111, 0.3);
+        }
+
+        .btn-secondary {
+            box-shadow: 0 0 0 3px rgba(108, 117, 125, 0.2);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 0 0 4px rgba(108, 117, 125, 0.3);
+        }
+
         /* Buttons */
         .btn-call, .btn-text, .btn-visit {
             font-size: 0.85rem;
@@ -324,36 +399,42 @@
             background-color: #c85a5a;
             border-color: #c85a5a;
             color: white;
+            box-shadow: 0 0 0 3px rgba(200, 90, 90, 0.2);
         }
 
         .btn-call:hover {
             background-color: #b34a4a;
             border-color: #a84444;
             color: white;
+            box-shadow: 0 0 0 4px rgba(200, 90, 90, 0.3);
         }
 
         .btn-text {
             background-color: #5a8eb8;
             border-color: #5a8eb8;
             color: white;
+            box-shadow: 0 0 0 3px rgba(90, 142, 184, 0.2);
         }
 
         .btn-text:hover {
             background-color: #4a7ea8;
             border-color: #3a6e98;
             color: white;
+            box-shadow: 0 0 0 4px rgba(90, 142, 184, 0.3);
         }
 
         .btn-visit {
             background-color: #5a9e6f;
             border-color: #5a9e6f;
             color: white;
+            box-shadow: 0 0 0 3px rgba(90, 158, 111, 0.2);
         }
 
         .btn-visit:hover {
             background-color: #4a8e5f;
             border-color: #4a8a5f;
             color: white;
+            box-shadow: 0 0 0 4px rgba(90, 158, 111, 0.3);
         }
 
         /* Category Sections */
@@ -395,19 +476,20 @@
 
         /* Pinned Section Highlight */
         .pinned-section {
-            background-color: #fff9e6;
-            border: 2px solid #ffc107;
+            background-color: #fef8e7;
+            border: 2px solid #e6c547;
             border-radius: 12px;
-            padding: 2rem;
+            padding: 1.5rem 2rem 2rem 2rem;
             margin-bottom: 3rem;
         }
 
         .pinned-section .section-header {
-            border-bottom-color: #ffc107;
+            border-bottom-color: #e6c547;
         }
 
-        .pinned-section .section-header i {
-            color: #ffc107;
+        .pinned-section .section-header i.section-icon,
+        .pinned-section .section-header i.collapse-btn {
+            color: #e6c547;
         }
 
         /* Add Resource Tile */
@@ -491,8 +573,8 @@
             position: absolute;
             top: 5.9rem;
             right: 0.75rem;
-            background-color: #ffc107;
-            border: 2px solid #ffc107;
+            background-color: #e6c547;
+            border: 2px solid #e6c547;
             color: #212529;
             border-radius: 50%;
             width: 36px;
@@ -508,8 +590,8 @@
         }
 
         .edit-btn:hover {
-            background-color: #e0a800;
-            border-color: #e0a800;
+            background-color: #d4b336;
+            border-color: #d4b336;
             transform: scale(1.1);
             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
@@ -612,12 +694,13 @@
     <div class="container mb-5">
         <!-- Pinned Resources Section -->
         <div class="pinned-section">
-            <div class="section-header">
-                <i class="bi-pin-angle-fill"></i>
+            <div class="section-header" onclick="toggleSection('pinnedContent')">
+                <i class="bi-pin-angle-fill section-icon"></i>
                 <h2>Pinned Resources</h2>
+                <i class="bi-chevron-down collapse-btn" id="pinnedCollapseBtn"></i>
             </div>
 
-            <div class="row g-4">
+            <div class="row g-4 collapsible-content" id="pinnedContent">
                 <!-- Add Resource Tile - Always First -->
                 <div class="col-md-6">
                     <div class="add-resource-card" data-bs-toggle="modal" data-bs-target="#addResourceModal">
@@ -682,11 +765,12 @@
 
         <!-- My Custom Resources Section -->
         <% if (customResources && customResources.length > 0) { %>
-        <div class="section-header mt-5">
-            <i class="bi-star-fill" style="color: #28a745;"></i>
+        <div class="section-header mt-5" onclick="toggleSection('customContent')">
+            <i class="bi-star-fill section-icon" style="color: #28a745;"></i>
             <h2>My Custom Resources</h2>
+            <i class="bi-chevron-down collapse-btn" id="customCollapseBtn" style="color: #28a745;"></i>
         </div>
-        <div class="row g-4 mb-4">
+        <div class="row g-4 mb-4 collapsible-content" id="customContent">
             <% customResources.forEach(resource => { %>
                 <div class="col-md-6">
                     <div class="resource-card">
@@ -823,6 +907,10 @@
                                    placeholder="https://example.com">
                         </div>
                         <div class="mb-3">
+                            <label for="resourcePhone" class="form-label">Phone Number (optional)</label>
+                            <input type="text" class="form-control" id="resourcePhone" placeholder="1-800-123-4567">
+                        </div>
+                        <div class="mb-3">
                             <label for="resourceDesc" class="form-label">Description (Optional)</label>
                             <textarea class="form-control" id="resourceDesc" rows="3"
                                       placeholder="Brief description of this resource..."></textarea>
@@ -926,6 +1014,7 @@
         async function addResource() {
             const resourceName = document.getElementById('resourceName').value.trim();
             const resourceUrl = document.getElementById('resourceUrl').value.trim();
+            const resourcePhone = document.getElementById('resourcePhone').value.trim();
             const resourceDesc = document.getElementById('resourceDesc').value.trim();
 
             if (!resourceName || !resourceUrl) {
@@ -942,6 +1031,7 @@
                     body: JSON.stringify({
                         resourceName: resourceName,
                         resourceUrl: resourceUrl,
+                        resourcePhone: resourcePhone || null,
                         resourceDesc: resourceDesc || `Custom resource: ${resourceName}`
                     })
                 });
@@ -1038,6 +1128,21 @@
             }
         }
 
+        // Toggle section collapse/expand
+        function toggleSection(contentId) {
+            const content = document.getElementById(contentId);
+            const collapseBtn = document.getElementById(contentId.replace('Content', 'CollapseBtn'));
+            const sectionHeader = collapseBtn ? collapseBtn.closest('.section-header') : null;
+
+            if (content && collapseBtn) {
+                content.classList.toggle('collapsed');
+                collapseBtn.classList.toggle('collapsed');
+                if (sectionHeader) {
+                    sectionHeader.classList.toggle('collapsed');
+                }
+            }
+        }
+
         // Filter function to handle both search and category filter
         function filterResources() {
             const searchInput = document.getElementById('resourceSearch').value.toLowerCase().trim();
@@ -1046,6 +1151,28 @@
 
             // Split search input into keywords (by spaces)
             const keywords = searchInput.split(/\s+/).filter(k => k.length > 0);
+
+            // Auto-collapse pinned section when searching or filtering by category
+            const pinnedContent = document.getElementById('pinnedContent');
+            const pinnedCollapseBtn = document.getElementById('pinnedCollapseBtn');
+            const pinnedHeader = pinnedCollapseBtn ? pinnedCollapseBtn.closest('.section-header') : null;
+            const isFiltering = keywords.length > 0 || categoryFilter !== 'all';
+
+            if (isFiltering && pinnedContent && pinnedCollapseBtn) {
+                // Collapse if not already collapsed
+                if (!pinnedContent.classList.contains('collapsed')) {
+                    pinnedContent.classList.add('collapsed');
+                    pinnedCollapseBtn.classList.add('collapsed');
+                    if (pinnedHeader) pinnedHeader.classList.add('collapsed');
+                }
+            } else if (!isFiltering && pinnedContent && pinnedCollapseBtn) {
+                // Expand when search and filter are cleared
+                if (pinnedContent.classList.contains('collapsed')) {
+                    pinnedContent.classList.remove('collapsed');
+                    pinnedCollapseBtn.classList.remove('collapsed');
+                    if (pinnedHeader) pinnedHeader.classList.remove('collapsed');
+                }
+            }
 
             allResourceCards.forEach(card => {
                 const resourceName = card.querySelector('h5')?.textContent.toLowerCase() || '';

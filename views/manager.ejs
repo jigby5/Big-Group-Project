@@ -99,15 +99,55 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
+        /* Global button styling with outlines */
+        .btn {
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.3);
+        }
+
+        .btn-success {
+            box-shadow: 0 0 0 3px rgba(90, 158, 111, 0.2);
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 0 0 4px rgba(90, 158, 111, 0.3);
+        }
+
+        .btn-secondary {
+            box-shadow: 0 0 0 3px rgba(108, 117, 125, 0.2);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 0 0 4px rgba(108, 117, 125, 0.3);
+        }
+
         .btn-edit {
-            background-color: #ffc107;
+            background-color: #e6c547;
             color: #212529;
             border: none;
+            box-shadow: 0 0 0 3px rgba(230, 197, 71, 0.2);
         }
 
         .btn-edit:hover {
-            background-color: #e0a800;
+            background-color: #d4b336;
             color: #212529;
+            box-shadow: 0 0 0 4px rgba(230, 197, 71, 0.3);
+        }
+
+        .btn-danger {
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.2);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.3);
         }
 
         .modal-header {
@@ -220,6 +260,23 @@
         <div class="user-table">
             <h3 class="mb-4"><i class="bi-people me-2"></i>All Users</h3>
 
+            <!-- Search Bar -->
+            <div class="mb-3">
+                <form action="/manager" method="GET" class="d-flex gap-2">
+                    <input type="text" class="form-control" name="search" placeholder="Search by username, email, or role..." value="<%= search %>" style="flex: 1;">
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createUserModal" style="white-space: nowrap;">
+                        <i class="bi-person-plus me-1"></i>Create User
+                    </button>
+                </form>
+                <% if (search) { %>
+                    <div class="mt-2">
+                        <a href="/manager" class="btn btn-sm btn-secondary">
+                            <i class="bi-x-circle me-1"></i>Clear Search
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -251,9 +308,13 @@
                                 </td>
                                 <td><%= user.level === 'U' ? 'User' : 'Manager/Admin' %></td>
                                 <td>
-                                    <button class="btn btn-sm btn-edit"
+                                    <button class="btn btn-sm btn-edit me-1"
                                             onclick="openEditRoleModal(<%= user.userid %>, '<%= user.username %>', '<%= user.level %>', <%= user.roleid || 1 %>)">
                                         <i class="bi-pencil-fill"></i> Edit Role
+                                    </button>
+                                    <button class="btn btn-sm btn-danger"
+                                            onclick="deleteUser(<%= user.userid %>, '<%= user.username.replace(/'/g, "\\'") %>')">
+                                        <i class="bi-trash-fill"></i> Delete
                                     </button>
                                 </td>
                             </tr>
@@ -263,6 +324,67 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- Create User Modal -->
+    <div class="modal fade" id="createUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi-person-plus me-2"></i>Create New User
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createUserForm">
+                        <div class="mb-3">
+                            <label for="newUsername" class="form-label">Username *</label>
+                            <input type="text" class="form-control" id="newUsername" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">Password *</label>
+                            <div class="position-relative">
+                                <input type="password" class="form-control" id="newPassword" required>
+                                <i class="bi-eye position-absolute top-50 end-0 translate-middle-y me-3"
+                                   style="cursor: pointer; color: #6c757d;"
+                                   id="toggleNewPassword"
+                                   onclick="togglePasswordModal('newPassword', 'toggleNewPassword')"></i>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newEmail" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="newEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPhone" class="form-label">Phone *</label>
+                            <input type="tel" class="form-control" id="newPhone" placeholder="(555) 123-4567" maxlength="14" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newLevel" class="form-label">Access Level *</label>
+                            <select class="form-select" id="newLevel" required onchange="updateNewUserRoleOptions()">
+                                <option value="U">User (U)</option>
+                                <option value="M">Manager/Admin (M)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3" id="newRoleSelectDiv" style="display: none;">
+                            <label for="newRoleId" class="form-label">Specific Role *</label>
+                            <select class="form-select" id="newRoleId" required>
+                                <% roles.forEach(role => { %>
+                                    <option value="<%= role.roleid %>"><%= role.rolename %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="createUser()">
+                        <i class="bi-person-plus me-1"></i>Create User
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Edit Role Modal -->
@@ -309,8 +431,165 @@
         </div>
     </div>
 
+    <!-- Delete User Confirmation Modal -->
+    <div class="modal fade" id="deleteUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white;">
+                    <h5 class="modal-title">
+                        <i class="bi-exclamation-triangle-fill me-2"></i>Confirm User Deletion
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: brightness(0) invert(1);"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger mb-3">
+                        <i class="bi-exclamation-circle-fill me-2"></i>
+                        <strong>Warning:</strong> This action cannot be undone!
+                    </div>
+                    <p>Are you sure you want to permanently delete the user <strong id="deleteUserName"></strong>?</p>
+                    <p class="mb-2">This will permanently remove:</p>
+                    <ul>
+                        <li>The user account</li>
+                        <li>All their saved preferences</li>
+                        <li>All their pinned resources</li>
+                        <li>All their custom resources</li>
+                    </ul>
+                    <input type="hidden" id="deleteUserId">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi-x-circle me-1"></i>Cancel
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDeleteUser()">
+                        <i class="bi-trash-fill me-1"></i>Delete User
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Password toggle for modal
+        function togglePasswordModal(inputId, iconId) {
+            const passwordInput = document.getElementById(inputId);
+            const toggleIcon = document.getElementById(iconId);
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('bi-eye');
+                toggleIcon.classList.add('bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('bi-eye-slash');
+                toggleIcon.classList.add('bi-eye');
+            }
+        }
+
+        // Update role options for new user
+        function updateNewUserRoleOptions() {
+            const level = document.getElementById('newLevel').value;
+            const roleSelectDiv = document.getElementById('newRoleSelectDiv');
+            const roleSelect = document.getElementById('newRoleId');
+
+            if (level === 'U') {
+                roleSelectDiv.style.display = 'none';
+                roleSelect.value = '1'; // User role
+            } else {
+                roleSelectDiv.style.display = 'block';
+                // Default to Manager if currently User
+                if (roleSelect.value === '1') {
+                    roleSelect.value = '2';
+                }
+            }
+        }
+
+        // Open delete user modal
+        function deleteUser(userId, username) {
+            document.getElementById('deleteUserId').value = userId;
+            document.getElementById('deleteUserName').textContent = username;
+
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteUserModal'));
+            deleteModal.show();
+        }
+
+        // Confirm and execute user deletion
+        async function confirmDeleteUser() {
+            const userId = document.getElementById('deleteUserId').value;
+
+            try {
+                const response = await fetch('/api/manager/delete-user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId })
+                });
+
+                const data = await response.json();
+
+                // Close the modal
+                const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteUserModal'));
+                deleteModal.hide();
+
+                if (data.success) {
+                    // Reload to show updated user list
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Failed to delete user.');
+                }
+            } catch (error) {
+                console.error('Error deleting user:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+
+        // Create new user
+        async function createUser() {
+            const username = document.getElementById('newUsername').value.trim();
+            const password = document.getElementById('newPassword').value;
+            const email = document.getElementById('newEmail').value.trim();
+            const phoneInput = document.getElementById('newPhone');
+            const phoneValue = phoneInput.value.replace(/\D/g, ''); // Strip formatting
+            const level = document.getElementById('newLevel').value;
+            const roleId = document.getElementById('newRoleId').value;
+
+            if (!username || !password || !email || !phoneValue) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            // Validate phone number is 10 digits
+            if (phoneValue.length !== 10) {
+                alert('Please enter a valid 10-digit phone number');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/manager/create-user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username,
+                        password,
+                        email,
+                        phone: phoneValue,
+                        level,
+                        roleId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Failed to create user.');
+                }
+            } catch (error) {
+                console.error('Error creating user:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+
         function openEditRoleModal(userId, username, level, roleId) {
             document.getElementById('editUserId').value = userId;
             document.getElementById('editUsername').textContent = username;
@@ -373,6 +652,32 @@
         // Initialize role options on page load
         document.addEventListener('DOMContentLoaded', function() {
             updateRoleOptions();
+        });
+
+        // Phone number formatting for Create User modal
+        document.getElementById('newPhone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, ''); // Remove all non-digit characters
+
+            // Limit to 10 digits
+            if (value.length > 10) {
+                value = value.slice(0, 10);
+            }
+
+            // Format as (XXX) XXX-XXXX
+            let formattedValue = '';
+            if (value.length > 0) {
+                formattedValue = '(' + value.substring(0, 3);
+                if (value.length >= 4) {
+                    formattedValue += ') ' + value.substring(3, 6);
+                    if (value.length >= 7) {
+                        formattedValue += '-' + value.substring(6, 10);
+                    }
+                } else if (value.length === 3) {
+                    formattedValue += ')';
+                }
+            }
+
+            e.target.value = formattedValue;
         });
     </script>
 </body>

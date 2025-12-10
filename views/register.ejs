@@ -144,7 +144,7 @@
       width: 100%;
       padding: 12px;
       /* Adjusted color for a registration/creation button */
-      background: linear-gradient(135deg, #4a90e2 0%, #3a79d3 100%); 
+      background: linear-gradient(135deg, #4a90e2 0%, #3a79d3 100%);
       color: white;
       border: none;
       border-radius: 6px;
@@ -153,12 +153,13 @@
       font-weight: 700;
       margin-top: 0.5rem;
       transition: all 0.3s;
+      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
     }
-    
+
     .btn-login:hover {
       background: linear-gradient(135deg, #3a79d3 0%, #2a63c0 100%);
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+      box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.3);
     }
     
     /* Extra links styling */
@@ -190,17 +191,17 @@
       display: block;
       margin-top: 1rem;
       padding: 0.75rem;
-      background-color: #fff3cd;
-      border: 2px solid #ffc107;
+      background-color: #fef8e7;
+      border: 2px solid #e6c547;
       border-radius: 6px;
-      color: #856404;
+      color: #5c4e2a;
       font-weight: 700;
       text-decoration: none;
       transition: all 0.3s;
     }
-    
+
     .crisis-link:hover {
-      background-color: #ffc107;
+      background-color: #e6c547;
       color: #000;
       transform: scale(1.02);
     }
@@ -216,7 +217,33 @@
         font-weight: 600;
         text-align: left;
     }
-    
+
+    /* Password toggle styling */
+    .password-wrapper {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+
+    .password-wrapper input {
+      padding-right: 45px;
+      margin-bottom: 0;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #6c757d;
+      font-size: 1.2rem;
+      transition: color 0.3s;
+    }
+
+    .password-toggle:hover {
+      color: #4a90e2;
+    }
+
     /* Footer styling */
     footer {
       background-color: #ebe4d8;
@@ -271,8 +298,11 @@
         <input type="text" id="username" name="username" class="form-control" placeholder="Choose a Username" required>
 
         <label for="password" class="form-label">Password</label>
-        <input type="password" id="password" name="password" class="form-control" placeholder="Create a Strong Password" required>
-        
+        <div class="password-wrapper">
+          <input type="password" id="password" name="password" class="form-control" placeholder="Create a Strong Password" required>
+          <i class="bi-eye password-toggle" id="togglePassword" onclick="togglePassword('password', 'togglePassword')"></i>
+        </div>
+
         <label for="email" class="form-label">Email</label>
         <input type="email" id="email" name="email" class="form-control" placeholder="name@example.com" required>
 
@@ -312,6 +342,24 @@
 
   <!-- Bootstrap core JS-->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Password toggle script -->
+  <script>
+    function togglePassword(inputId, iconId) {
+      const passwordInput = document.getElementById(inputId);
+      const toggleIcon = document.getElementById(iconId);
+
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.classList.remove('bi-eye');
+        toggleIcon.classList.add('bi-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        toggleIcon.classList.remove('bi-eye-slash');
+        toggleIcon.classList.add('bi-eye');
+      }
+    }
+  </script>
 
   <!-- Phone number formatting script -->
   <script>
